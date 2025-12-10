@@ -150,22 +150,79 @@
   font-weight: 600;
   margin-bottom: 0.5rem;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.complete-badge {
+  font-size: 0.8rem;
+  padding: 0.2rem 0.5rem;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  animation: bounce 1s ease-in-out;
+}
+
+/* Progress Controls */
+.progress-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progress-btn {
+  padding: 0.4rem 0.8rem;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: var(--transition-smooth);
+  backdrop-filter: blur(10px);
+}
+
+.progress-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.progress-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.progress-btn.decrease {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+.progress-btn.increase {
+  background: rgba(34, 197, 94, 0.3);
 }
 
 .progress-bar {
-  width: 100%;
-  height: 8px;
+  flex: 1;
+  height: 12px;
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
   backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.progress-bar:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.02);
 }
 
 .progress-fill {
   height: 100%;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6));
-  border-radius: 4px;
-  transition: width 1s ease-out;
+  border-radius: 6px;
+  transition: width 0.5s ease-out;
   position: relative;
 }
 
@@ -178,6 +235,64 @@
   width: 20px;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4));
   animation: shimmer 2s infinite;
+}
+
+/* Progress Editor */
+.progress-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.progress-slider {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+.progress-value {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.editor-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.save-btn, .cancel-btn {
+  padding: 0.3rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition-smooth);
+}
+
+.save-btn {
+  background: rgba(34, 197, 94, 0.8);
+  color: white;
+}
+
+.save-btn:hover {
+  background: rgba(34, 197, 94, 1);
+}
+
+.cancel-btn {
+  background: rgba(239, 68, 68, 0.8);
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: rgba(239, 68, 68, 1);
 }
 
 /* Timeline Details (Expandable) */
@@ -289,6 +404,82 @@
   .progress-label {
     font-size: 0.8rem;
   }
+}
+
+/* Overall Progress */
+.overall-progress {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--ocean-blue), var(--seaweed-green));
+  border-radius: 20px;
+  color: white;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.overall-progress h3 {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.overall-progress-bar {
+  width: 100%;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.overall-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b, #dc2626);
+  border-radius: 8px;
+  transition: width 1s ease-out;
+}
+
+.summer-complete {
+  margin-top: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+/* Achievement Message */
+.achievement-message {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background: rgba(34, 197, 94, 0.2);
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* Timeline Actions */
+.timeline-actions {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.reset-btn {
+  padding: 0.8rem 2rem;
+  background: linear-gradient(135deg, var(--sunset-orange), var(--coral));
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.reset-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
 /* Floating Timeline Elements */
