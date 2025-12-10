@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1001;
-  padding: 1rem;
+  padding: 0.5rem;
   backdrop-filter: blur(10px);
 }
 
@@ -18,9 +18,9 @@
   background: white;
   border-radius: 15px;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-  width: 95vw;
-  height: 90vh;
-  max-width: 1200px;
+  width: 98vw;
+  height: 95vh;
+  max-width: none;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -260,7 +260,17 @@
   font-weight: 600;
 }
 
-/* Dictation Panel (Left Side) */
+/* Transcript Panel (Left Side) */
+.transcript-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
+  border-right: 3px solid var(--ocean-blue);
+  padding: 1.5rem;
+}
+
+/* Legacy support for dictation-panel */
 .dictation-panel {
   flex: 1;
   display: flex;
@@ -270,6 +280,7 @@
   padding: 1.5rem;
 }
 
+.transcript-header,
 .dictation-header {
   display: flex;
   justify-content: space-between;
@@ -279,6 +290,7 @@
   border-bottom: 2px solid var(--light-blue);
 }
 
+.transcript-header h4,
 .dictation-header h4 {
   margin: 0;
   color: var(--ocean-blue);
@@ -301,6 +313,7 @@
   gap: 1rem;
 }
 
+.live-transcript-display label,
 .live-transcript label,
 .dictated-content label {
   display: block;
@@ -308,6 +321,29 @@
   color: var(--deep-sea);
   margin-bottom: 0.5rem;
   font-family: var(--font-heading);
+}
+
+/* Add styles for new elements */
+.transcript-controls,
+.dictation-tips {
+  margin-top: 1rem;
+}
+
+.dictation-tips h5 {
+  margin: 0 0 0.5rem 0;
+  color: var(--ocean-blue);
+  font-size: 0.9rem;
+}
+
+.dictation-tips ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 0.8rem;
+  color: var(--deep-sea);
+}
+
+.dictation-tips li {
+  margin-bottom: 0.3rem;
 }
 
 .transcript-text {
@@ -402,6 +438,45 @@
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+}
+
+/* Voice Controls Bar - Always Visible */
+.voice-controls-bar {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.voice-controls-bar .dictate-btn,
+.voice-controls-bar .clear-btn,
+.voice-controls-bar .insert-btn {
+  flex: 0 1 auto;
+  min-width: 120px;
+  padding: 0.8rem 1.5rem;
+  font-size: 0.95rem;
+}
+
+/* Mobile Responsive for Voice Controls */
+@media (max-width: 768px) {
+  .voice-controls-bar {
+    padding: 0.8rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .voice-controls-bar .dictate-btn,
+  .voice-controls-bar .clear-btn,
+  .voice-controls-bar .insert-btn {
+    flex: 1 1 30%;
+    min-width: 100px;
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+  }
 }
 
 .unsupported-message {

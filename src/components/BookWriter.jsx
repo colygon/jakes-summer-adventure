@@ -16,6 +16,7 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
   const [recognition, setRecognition] = useState(null);
   const [isSupported, setIsSupported] = useState(false);
   const [dictationText, setDictationText] = useState('');
+  const [showAddedFeedback, setShowAddedFeedback] = useState(false);
   const dictationRef = useRef(null);
 
   // Initialize speech recognition
@@ -85,6 +86,7 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
   }, [book, bookContent]);
 
   const saveChapters = (newChapters) => {
+    console.log('Saving chapters to database:', newChapters.length, 'chapters for book', book.id);
     setChapters(newChapters);
     setBookContent(prev => ({
       ...prev,
@@ -175,9 +177,22 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
     if (dictationText.trim()) {
       const currentContent = chapters[currentChapter]?.content || '';
       const updatedContent = currentContent + (currentContent ? '\n\n' : '') + dictationText.trim();
+
+      console.log('Adding dictated text to chapter:', dictationText.trim());
+      console.log('Updated chapter content:', updatedContent);
+
       updateCurrentChapter(updatedContent);
+
+      // Clear dictation after successful addition
       setDictationText('');
       setTranscript('');
+
+      // Show success feedback
+      setShowAddedFeedback(true);
+      setTimeout(() => setShowAddedFeedback(false), 2000);
+
+      // Provide user feedback
+      console.log('Dictated text added to chapter and saved to database');
     }
   };
 
@@ -276,71 +291,56 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
               </div>
 
               <div className="writing-workspace">
-                {/* Voice Dictation Panel (Left Page) */}
-                <div className="dictation-panel">
-                  <div className="dictation-header">
-                    <h4>Voice Dictation</h4>
+                {/* Live Transcript Panel (Left Page) */}
+                <div className="transcript-panel">
+                  <div className="transcript-header">
+                    <h4>Live Transcript</h4>
                     <div className="mic-status">
                       {isListening ? '🎤 Listening...' : '🎤 Ready'}
                     </div>
                   </div>
 
-                  <div className="dictation-display">
-                    <div className="live-transcript">
-                      <label>Live Transcript:</label>
-                      <div className={`transcript-text ${isListening ? 'listening' : ''}`}>
-                        {transcript || (isListening ? "Start speaking..." : "Click 'Dictate' to begin")}
-                      </div>
-                    </div>
-
-                    <div className="dictated-content">
-                      <label>Dictated Text:</label>
-                      <textarea
-                        ref={dictationRef}
-                        className="dictation-textarea"
-                        value={dictationText}
-                        onChange={(e) => setDictationText(e.target.value)}
-                        placeholder="Your dictated text will appear here..."
-                      />
+                  <div className="live-transcript-display">
+                    <label>Speech Recognition:</label>
+                    <div className={`transcript-text ${isListening ? 'listening' : ''}`}>
+                      {transcript || (isListening ? "Start speaking..." : "Click 'Dictate' to begin")}
                     </div>
                   </div>
 
-                  <div className="dictation-controls">
-                    {!isSupported ? (
+                  <div className="dictated-content">
+                    <label>Dictated Text (Edit before adding):</label>
+                    <textarea
+                      ref={dictationRef}
+                      className="dictation-textarea"
+                      value={dictationText}
+                      onChange={(e) => setDictationText(e.target.value)}
+                      placeholder="Your dictated text will appear here for editing..."
+                    />
+                  </div>
+
+                  <div className="transcript-controls">
+                    {!isSupported && (
                       <div className="unsupported-message">
                         Speech recognition not supported in this browser
                       </div>
-                    ) : (
-                      <>
-                        <button
-                          className={`dictate-btn ${isListening ? 'listening' : ''}`}
-                          onClick={isListening ? stopDictation : startDictation}
-                        >
-                          {isListening ? '⏹️ Stop' : '🎤 Dictate'}
-                        </button>
-                        <button
-                          className="clear-btn"
-                          onClick={clearDictation}
-                          disabled={!dictationText}
-                        >
-                          🗑️ Clear
-                        </button>
-                        <button
-                          className="insert-btn"
-                          onClick={insertDictationToChapter}
-                          disabled={!dictationText.trim()}
-                        >
-                          ➡️ Add to Chapter
-                        </button>
-                      </>
                     )}
+                  </div>
+
+                  <div className="dictation-tips">
+                    <h5>Voice Tips:</h5>
+                    <ul>
+                      <li>Speak clearly and at normal pace</li>
+                      <li>Use punctuation commands: "period", "comma"</li>
+                      <li>Edit text above before adding to chapter</li>
+                      <li>Say "new paragraph" for line breaks</li>
+                    </ul>
                   </div>
                 </div>
 
-                {/* Text Editing Panel (Right Page) */}
+                {/* Chapter Text Panel (Right Page) */}
                 <div className="text-panel">
                   <div className="text-header">
-                    <h4>Text Editor</h4>
+                    <h4>Chapter Content</h4>
                     <div className="editor-tools">
                       <button
                         className="auto-format-btn"
@@ -364,21 +364,49 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
                     className="chapter-editor"
                     value={chapters[currentChapter]?.content || ''}
                     onChange={(e) => updateCurrentChapter(e.target.value)}
-                    placeholder="Type your story here, or use voice dictation on the left..."
+                    placeholder="Your chapter content appears here. Use voice dictation on the left to add content..."
                   />
 
                   <div className="writing-tips">
-                    <h5>Quick Tips:</h5>
+                    <h5>Writing Tips:</h5>
                     <ul>
-                      <li>Use voice dictation for natural storytelling</li>
-                      <li>Edit and refine your dictated text here</li>
-                      <li>Speak in full sentences for best results</li>
-                      <li>Take breaks to review your work</li>
+                      <li>Write in short, clear sentences</li>
+                      <li>Use the dictation panel to speak naturally</li>
+                      <li>Review and edit dictated text before adding</li>
+                      <li>Save frequently - your work auto-saves</li>
                     </ul>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Voice Control Buttons - Always Visible */}
+          <div className="voice-controls-bar">
+            {isSupported && (
+              <>
+                <button
+                  className={`dictate-btn ${isListening ? 'listening' : ''}`}
+                  onClick={isListening ? stopDictation : startDictation}
+                >
+                  {isListening ? '⏹️ Stop' : '🎤 Dictate'}
+                </button>
+                <button
+                  className="clear-btn"
+                  onClick={clearDictation}
+                  disabled={!dictationText}
+                >
+                  🗑️ Clear
+                </button>
+                <button
+                  className="insert-btn"
+                  onClick={insertDictationToChapter}
+                  disabled={!dictationText.trim()}
+                >
+                  {showAddedFeedback ? '✅ Added!' : '➡️ Add to Chapter'}
+                </button>
+              </>
+            )}
           </div>
 
           <div className="writer-footer">
