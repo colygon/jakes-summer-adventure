@@ -539,3 +539,280 @@
     display: none;
   }
 }
+
+/* Add Activity Button */
+.add-activity-btn {
+  background: linear-gradient(135deg, var(--seaweed-green), var(--ocean-blue));
+  color: white;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: 0 10px 20px rgba(0, 119, 190, 0.3);
+  margin-right: 1rem;
+}
+
+.add-activity-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(0, 119, 190, 0.4);
+}
+
+/* Delete Activity Button */
+.delete-activity-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: var(--transition-smooth);
+}
+
+.delete-activity-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* Activity Modal */
+.activity-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.activity-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  min-width: 500px;
+  max-width: 90vw;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.activity-modal h3 {
+  margin: 0 0 1.5rem 0;
+  color: var(--ocean-blue);
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+}
+
+/* Activity Type Selector */
+.activity-type-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.activity-type-selector button {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  font-weight: 500;
+}
+
+.activity-type-selector button.active {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--seaweed-green));
+  color: white;
+  border-color: var(--ocean-blue);
+}
+
+.activity-type-selector button:hover:not(.active) {
+  border-color: var(--ocean-blue);
+  background: #f8f9fa;
+}
+
+/* Activity Suggestions */
+.activity-suggestions {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.suggestion-card {
+  padding: 1rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.suggestion-card:hover {
+  border-color: var(--ocean-blue);
+  background: #f8f9fa;
+}
+
+.suggestion-card.selected {
+  border-color: var(--ocean-blue);
+  background: linear-gradient(135deg, rgba(0, 119, 190, 0.1), rgba(0, 150, 136, 0.1));
+}
+
+.suggestion-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.suggestion-card h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--ocean-blue);
+  font-size: 1rem;
+}
+
+.suggestion-card p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Custom Activity Form */
+.custom-activity-form {
+  margin-bottom: 1.5rem;
+}
+
+.icon-selector {
+  margin-bottom: 1rem;
+}
+
+.icon-selector label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--ocean-blue);
+}
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.icon-grid button {
+  padding: 0.8rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 1.5rem;
+  transition: var(--transition-smooth);
+}
+
+.icon-grid button:hover {
+  border-color: var(--ocean-blue);
+}
+
+.icon-grid button.selected {
+  border-color: var(--ocean-blue);
+  background: linear-gradient(135deg, rgba(0, 119, 190, 0.1), rgba(0, 150, 136, 0.1));
+}
+
+.custom-activity-form input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+.custom-activity-form input:focus {
+  border-color: var(--ocean-blue);
+  box-shadow: 0 0 0 3px rgba(0, 119, 190, 0.1);
+}
+
+.custom-activity-form textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 1rem;
+  min-height: 80px;
+  resize: vertical;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+.custom-activity-form textarea:focus {
+  border-color: var(--ocean-blue);
+  box-shadow: 0 0 0 3px rgba(0, 119, 190, 0.1);
+}
+
+/* Modal Buttons */
+.modal-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  font-size: 1rem;
+}
+
+.add-btn {
+  background: linear-gradient(135deg, var(--seaweed-green), var(--ocean-blue));
+  color: white;
+}
+
+.add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 119, 190, 0.3);
+}
+
+.cancel-btn {
+  background: #f1f3f4;
+  color: #5f6368;
+}
+
+.cancel-btn:hover {
+  background: #e8eaed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .activity-modal {
+    min-width: unset;
+    width: 95vw;
+    padding: 1.5rem;
+  }
+
+  .activity-suggestions {
+    grid-template-columns: 1fr;
+  }
+
+  .icon-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}

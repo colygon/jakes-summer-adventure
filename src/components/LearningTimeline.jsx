@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useAutoSaveData } from '../hooks/useAutoSaveData';
 import '../styles/LearningTimeline.css';
@@ -11,7 +11,7 @@ const initialEvents = [
     icon: "🧮",
     details: "Solving complex problems, learning new concepts, and having fun with mathematics",
     progress: 0,
-    color: "from-blue-500 to-purple-600"
+    color: "from-blue-600 to-indigo-700"
   },
   {
     id: 2,
@@ -20,7 +20,7 @@ const initialEvents = [
     icon: "📚",
     details: "Completing the last set of RSM homework assignments to wrap up the semester",
     progress: 75,
-    color: "from-green-500 to-teal-600"
+    color: "from-emerald-600 to-teal-700"
   },
   {
     id: 3,
@@ -29,7 +29,7 @@ const initialEvents = [
     icon: "✍️",
     details: "Working on a personal book project, developing characters and plot",
     progress: 25,
-    color: "from-orange-500 to-red-600"
+    color: "from-rose-600 to-pink-700"
   },
   {
     id: 4,
@@ -38,11 +38,166 @@ const initialEvents = [
     icon: "🌟",
     details: "Open time for exploring new topics, reading, and learning whatever sparks curiosity",
     progress: 10,
-    color: "from-purple-500 to-pink-600"
+    color: "from-purple-600 to-violet-700"
   }
 ];
 
-const TimelineItem = ({ event, index, isActive, onClick, onProgressUpdate }) => {
+// Fun activity suggestions and color options
+const activitySuggestions = [
+  { title: "Learn a New Language", icon: "🌍", description: "Master a new language through apps and practice" },
+  { title: "Coding Adventure", icon: "💻", description: "Build websites, games, or apps" },
+  { title: "Art & Drawing", icon: "🎨", description: "Express creativity through visual arts" },
+  { title: "Music Practice", icon: "🎵", description: "Learn an instrument or compose songs" },
+  { title: "Science Experiments", icon: "🧪", description: "Explore chemistry and physics at home" },
+  { title: "Cooking Skills", icon: "👩‍🍳", description: "Master new recipes and cooking techniques" },
+  { title: "Fitness Challenge", icon: "💪", description: "Get stronger with daily workouts" },
+  { title: "Photography Journey", icon: "📸", description: "Capture the world through your lens" },
+  { title: "Gardening Project", icon: "🌱", description: "Grow plants and learn about nature" },
+  { title: "Reading Marathon", icon: "📖", description: "Dive into new books and stories" }
+];
+
+const colorOptions = [
+  "from-blue-600 to-indigo-700",
+  "from-emerald-600 to-teal-700",
+  "from-rose-600 to-pink-700",
+  "from-purple-600 to-violet-700",
+  "from-amber-600 to-orange-700",
+  "from-cyan-600 to-blue-700",
+  "from-red-600 to-rose-700",
+  "from-green-600 to-emerald-700",
+  "from-indigo-600 to-purple-700",
+  "from-pink-600 to-rose-700"
+];
+
+// Add Activity Modal Component
+const AddActivityModal = ({ isOpen, onClose, onAdd }) => {
+  const [activityType, setActivityType] = useState('custom');
+  const [customActivity, setCustomActivity] = useState({ title: '', description: '', icon: '🎯' });
+  const [selectedSuggestion, setSelectedSuggestion] = useState(null);
+
+  const handleSubmit = () => {
+    const newActivity = activityType === 'custom'
+      ? customActivity
+      : selectedSuggestion;
+
+    if (!newActivity.title.trim()) return;
+
+    const activity = {
+      id: Date.now(),
+      title: newActivity.title,
+      description: newActivity.description,
+      icon: newActivity.icon,
+      details: `Working on ${newActivity.title.toLowerCase()} to expand skills and knowledge`,
+      progress: 0,
+      color: colorOptions[Math.floor(Math.random() * colorOptions.length)],
+      isUserAdded: true
+    };
+
+    onAdd(activity);
+    setCustomActivity({ title: '', description: '', icon: '🎯' });
+    setSelectedSuggestion(null);
+    setActivityType('custom');
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="activity-modal-overlay"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+      >
+        <motion.div
+          className="activity-modal"
+          initial={{ scale: 0.9, y: 50 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.9, y: 50 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h3>Add New Learning Activity 📚</h3>
+
+          <div className="activity-type-selector">
+            <button
+              className={activityType === 'suggestion' ? 'active' : ''}
+              onClick={() => setActivityType('suggestion')}
+            >
+              ✨ Choose from Ideas
+            </button>
+            <button
+              className={activityType === 'custom' ? 'active' : ''}
+              onClick={() => setActivityType('custom')}
+            >
+              🎯 Create Custom
+            </button>
+          </div>
+
+          {activityType === 'suggestion' ? (
+            <div className="activity-suggestions">
+              {activitySuggestions.map((suggestion, index) => (
+                <motion.div
+                  key={index}
+                  className={`suggestion-card ${selectedSuggestion === suggestion ? 'selected' : ''}`}
+                  onClick={() => setSelectedSuggestion(suggestion)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span className="suggestion-icon">{suggestion.icon}</span>
+                  <div>
+                    <h4>{suggestion.title}</h4>
+                    <p>{suggestion.description}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="custom-activity-form">
+              <div className="icon-selector">
+                <label>Choose an icon:</label>
+                <div className="icon-grid">
+                  {['🎯', '📚', '🎨', '💻', '🏃', '🎵', '🧪', '📸', '🌱', '✨'].map(icon => (
+                    <button
+                      key={icon}
+                      className={customActivity.icon === icon ? 'selected' : ''}
+                      onClick={() => setCustomActivity(prev => ({ ...prev, icon }))}
+                    >
+                      {icon}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <input
+                type="text"
+                placeholder="Activity title..."
+                value={customActivity.title}
+                onChange={(e) => setCustomActivity(prev => ({ ...prev, title: e.target.value }))}
+              />
+
+              <textarea
+                placeholder="Describe this learning activity..."
+                value={customActivity.description}
+                onChange={(e) => setCustomActivity(prev => ({ ...prev, description: e.target.value }))}
+              />
+            </div>
+          )}
+
+          <div className="modal-buttons">
+            <button onClick={handleSubmit} className="add-btn">
+              {activityType === 'suggestion' ? '✨ Add Activity' : '🎯 Create Activity'}
+            </button>
+            <button onClick={onClose} className="cancel-btn">Cancel</button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+const TimelineItem = ({ event, index, isActive, onClick, onProgressUpdate, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempProgress, setTempProgress] = useState(event.progress);
 
@@ -178,6 +333,18 @@ const TimelineItem = ({ event, index, isActive, onClick, onProgressUpdate }) => 
                 🎉 Awesome job completing this goal!
               </motion.div>
             )}
+            {event.isUserAdded && (
+              <button
+                className="delete-activity-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(event.id);
+                }}
+                title="Delete this activity"
+              >
+                🗑️ Remove Activity
+              </button>
+            )}
           </motion.div>
         )}
       </motion.div>
@@ -189,6 +356,7 @@ const LearningTimeline = () => {
   const [activeEvent, setActiveEvent] = useState(null);
   const [timelineEvents, setTimelineEvents, { isLoading, saveStatus, lastSaved }] = useAutoSaveData('timeline', initialEvents);
   const [totalProgress, setTotalProgress] = useState(0);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
     const total = timelineEvents.reduce((sum, event) => sum + event.progress, 0) / timelineEvents.length;
@@ -205,6 +373,21 @@ const LearningTimeline = () => {
         event.id === eventId ? { ...event, progress: newProgress } : event
       )
     );
+  };
+
+  const handleAddActivity = (newActivity) => {
+    setTimelineEvents(prevEvents => [...prevEvents, newActivity]);
+  };
+
+  const handleDeleteActivity = (activityId) => {
+    if (window.confirm('Are you sure you want to remove this activity?')) {
+      setTimelineEvents(prevEvents =>
+        prevEvents.filter(event => event.id !== activityId)
+      );
+      if (activeEvent === activityId) {
+        setActiveEvent(null);
+      }
+    }
   };
 
   const handleResetAll = () => {
@@ -272,6 +455,7 @@ const LearningTimeline = () => {
               isActive={activeEvent === event.id}
               onClick={handleEventClick}
               onProgressUpdate={handleProgressUpdate}
+              onDelete={handleDeleteActivity}
             />
           ))}
         </div>
@@ -282,11 +466,20 @@ const LearningTimeline = () => {
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
+          <button className="add-activity-btn" onClick={() => setShowAddModal(true)}>
+            ✨ Add New Activity
+          </button>
           <button className="reset-btn" onClick={handleResetAll}>
             Reset All Progress
           </button>
         </motion.div>
       </motion.div>
+
+      <AddActivityModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onAdd={handleAddActivity}
+      />
     </section>
   );
 };
