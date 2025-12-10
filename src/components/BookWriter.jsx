@@ -217,11 +217,6 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
           <div className="writer-header">
             <div className="book-info">
               <h2>Writing: {book.title}</h2>
-              <div className="stats">
-                <span>{getTotalWordCount()} words</span>
-                <span>{chapters.length} chapters</span>
-                <span>{Math.ceil(getTotalWordCount() / 250)} pages</span>
-              </div>
             </div>
             <button className="close-writer-btn" onClick={onClose}>✕</button>
           </div>
@@ -411,6 +406,11 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
 
 
           <div className="writer-footer">
+            <div className="book-stats">
+              <span>{getTotalWordCount()} words</span>
+              <span>{chapters.length} chapters</span>
+              <span>{Math.ceil(getTotalWordCount() / 250)} pages</span>
+            </div>
             <div className="progress-info">
               Progress: {Math.round((getTotalWordCount() / (book.targetPages * 250)) * 100)}% of target
             </div>

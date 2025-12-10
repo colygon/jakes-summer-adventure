@@ -230,17 +230,21 @@
   display: flex;
   flex-direction: column;
   padding: 0;
+  height: 100%;
+  min-height: 0;
 }
 
 /* Writing Workspace - Split View */
 .writing-workspace {
   flex: 1;
-  display: flex;
-  flex-direction: row;
+  display: flex !important;
+  flex-direction: row !important;
   overflow: hidden;
   min-height: 600px;
   width: 100%;
-  justify-content: space-between;
+  justify-content: stretch;
+  align-items: stretch;
+  gap: 0;
 }
 
 .chapter-header {
@@ -266,14 +270,16 @@
 
 /* Transcript Panel (Left Side) */
 .transcript-panel {
-  flex: 1;
+  flex: 1 1 50%;
   display: flex;
   flex-direction: column;
   background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
   border-right: 3px solid var(--ocean-blue);
   padding: 1.5rem;
+  min-width: 0;
   max-width: 50%;
   order: 1;
+  width: 50%;
 }
 
 /* Legacy support for dictation-panel */
@@ -497,12 +503,14 @@
 
 /* Text Panel (Right Side) */
 .text-panel {
-  flex: 1;
+  flex: 1 1 50%;
   display: flex;
   flex-direction: column;
   background: white;
+  min-width: 0;
   max-width: 50%;
   order: 2;
+  width: 50%;
 }
 
 .text-header {
@@ -603,6 +611,24 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.book-stats {
+  display: flex;
+  gap: 1.5rem;
+  font-weight: 600;
+  color: var(--deep-sea);
+  font-family: var(--font-heading);
+}
+
+.book-stats span {
+  padding: 0.25rem 0.75rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 6px;
+  border: 1px solid var(--ocean-blue);
+  font-size: 0.9rem;
 }
 
 .progress-info {
@@ -679,8 +705,32 @@
   background: var(--deep-sea);
 }
 
+/* Force desktop layout for all reasonable screen sizes */
+.writing-workspace {
+  flex-direction: row !important;
+  display: flex !important;
+}
+
+.transcript-panel {
+  width: 50% !important;
+  max-width: 50% !important;
+  min-width: 50% !important;
+  flex: 0 0 50% !important;
+  order: 1 !important;
+  border-right: 3px solid var(--ocean-blue) !important;
+  border-bottom: none !important;
+}
+
+.text-panel {
+  width: 50% !important;
+  max-width: 50% !important;
+  min-width: 50% !important;
+  flex: 0 0 50% !important;
+  order: 2 !important;
+}
+
 /* Mobile Responsiveness for Writing Workspace */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .writing-workspace {
     flex-direction: column;
     min-height: auto;
