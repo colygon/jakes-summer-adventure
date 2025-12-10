@@ -115,7 +115,7 @@ const generateBookCover = (book) => {
   ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
   ctx.fillText(book.genre, canvas.width / 2, y + 50);
 
-  // Add decorative element based on genre
+  // Add decorative element based on genre with background circle for visibility
   const genreIcons = {
     'Adventure': '🏔️',
     'Educational Fiction': '🧮',
@@ -127,8 +127,21 @@ const generateBookCover = (book) => {
   };
 
   const icon = genreIcons[book.genre] || '📚';
+
+  // Draw background circle for emoji visibility
+  const iconX = canvas.width / 2;
+  const iconY = canvas.height - 60;
+  ctx.beginPath();
+  ctx.arc(iconX, iconY - 10, 30, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Draw emoji on top of background
   ctx.font = '40px Arial';
-  ctx.fillText(icon, canvas.width / 2, canvas.height - 60);
+  ctx.fillText(icon, iconX, iconY);
 
   return canvas.toDataURL();
 };
