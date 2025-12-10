@@ -447,25 +447,25 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
                         onChange={(e) => setDictationText(e.target.value)}
                         placeholder="Your dictated text will appear here for editing..."
                       />
-                      {isSupported && (
-                        <>
-                          <button
-                            className="clear-btn corner-btn corner-btn-left"
-                            onClick={clearDictation}
-                            disabled={!dictationText}
-                          >
-                            🗑️ Clear
-                          </button>
-                          <button
-                            className="insert-btn corner-btn corner-btn-right"
-                            onClick={insertDictationToChapter}
-                            disabled={!dictationText.trim()}
-                          >
-                            {showAddedFeedback ? '✅ Added!' : '➡️ Add to Chapter'}
-                          </button>
-                        </>
-                      )}
                     </div>
+                    {isSupported && (
+                      <div className="dictation-buttons">
+                        <button
+                          className="clear-btn"
+                          onClick={clearDictation}
+                          disabled={!dictationText}
+                        >
+                          🗑️ Clear
+                        </button>
+                        <button
+                          className="insert-btn"
+                          onClick={insertDictationToChapter}
+                          disabled={!dictationText.trim()}
+                        >
+                          {showAddedFeedback ? '✅ Added!' : '➡️ Add to Chapter'}
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <div className="transcript-controls">
