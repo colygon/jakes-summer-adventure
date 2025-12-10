@@ -20,10 +20,6 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
   const dictationRef = useRef(null);
   const isListeningRef = useRef(false);
 
-  // Target page editing state
-  const [isEditingTarget, setIsEditingTarget] = useState(false);
-  const [targetPageInput, setTargetPageInput] = useState('');
-  const [showTargetFeedback, setShowTargetFeedback] = useState(false);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -294,27 +290,6 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
     }
   };
 
-  // Target page functions
-  const startEditingTarget = () => {
-    setIsEditingTarget(true);
-    setTargetPageInput(book.targetPages.toString());
-  };
-
-  const saveTargetPages = () => {
-    const newTarget = parseInt(targetPageInput);
-    if (newTarget && newTarget > 0) {
-      onUpdateBook(book.id, book.pages, newTarget);
-      setIsEditingTarget(false);
-      setShowTargetFeedback(true);
-      setTimeout(() => setShowTargetFeedback(false), 2000);
-      console.log('Updated target pages to:', newTarget);
-    }
-  };
-
-  const cancelEditingTarget = () => {
-    setIsEditingTarget(false);
-    setTargetPageInput('');
-  };
 
   if (!isOpen || !book) return null;
 
@@ -512,40 +487,6 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
           </div>
 
 
-          <div className="writer-footer">
-            <div className="book-stats">
-              <span>{getTotalWordCount()} words</span>
-              <span>{chapters.length} chapters</span>
-              <span>{Math.ceil(getTotalWordCount() / 250)} pages</span>
-            </div>
-            <div className="progress-info">
-              Progress: {Math.round((getTotalWordCount() / (book.targetPages * 250)) * 100)}% of target
-              {!isEditingTarget ? (
-                <button className="set-target-btn" onClick={startEditingTarget}>
-                  {showTargetFeedback ? '✅ Target Updated!' : '📋 Set Target'}
-                </button>
-              ) : (
-                <div className="target-edit-form">
-                  <input
-                    type="number"
-                    value={targetPageInput}
-                    onChange={(e) => setTargetPageInput(e.target.value)}
-                    placeholder="Target pages"
-                    className="target-input"
-                    autoFocus
-                    onKeyPress={(e) => e.key === 'Enter' && saveTargetPages()}
-                  />
-                  <button onClick={saveTargetPages} className="save-target-btn">✓</button>
-                  <button onClick={cancelEditingTarget} className="cancel-target-btn">✕</button>
-                </div>
-              )}
-            </div>
-            <div className="save-status">
-              {contentSaveStatus === 'saving' && <span className="saving">💾 Saving...</span>}
-              {contentSaveStatus === 'saved' && <span className="saved">✓ Auto-saved</span>}
-              {contentSaveStatus === 'error' && <span className="error">⚠ Save failed</span>}
-            </div>
-          </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>
