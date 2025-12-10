@@ -434,6 +434,15 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
                     <div className={`transcript-text ${isListening ? 'listening' : ''}`}>
                       {transcript || (isListening ? "Start speaking..." : "Click 'Dictate' to begin")}
                     </div>
+                    <div className="dictation-tips">
+                      <h5>Voice Tips:</h5>
+                      <ul>
+                        <li>Speak clearly and at normal pace</li>
+                        <li>Use punctuation commands: "period", "comma", "question mark"</li>
+                        <li>Say "new paragraph" for line breaks</li>
+                        <li>Edit your text before adding to chapter</li>
+                      </ul>
+                    </div>
                   </div>
 
                   <div className="dictated-content">
@@ -453,16 +462,6 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
                         Speech recognition not supported in this browser
                       </div>
                     )}
-                  </div>
-
-                  <div className="dictation-tips">
-                    <h5>Voice Tips:</h5>
-                    <ul>
-                      <li>Speak clearly and at normal pace</li>
-                      <li>Use punctuation commands: "period", "comma", "question mark"</li>
-                      <li>Say "new paragraph" for line breaks</li>
-                      <li>Edit your text before adding to chapter</li>
-                    </ul>
                   </div>
 
                 </div>
@@ -486,23 +485,6 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
                         }}
                       >
                         📝 Format
-                      </button>
-                      <button
-                        className="turn-to-book-btn"
-                        onClick={() => {
-                          onClose();
-                          // Trigger the book reader view
-                          if (onEdit) {
-                            // Use onEdit callback to switch to read mode
-                            setTimeout(() => {
-                              // This will be handled by the parent component
-                              const event = new CustomEvent('openBookReader', { detail: { book } });
-                              window.dispatchEvent(event);
-                            }, 100);
-                          }
-                        }}
-                      >
-                        📖 Turn into Book
                       </button>
                     </div>
                   </div>

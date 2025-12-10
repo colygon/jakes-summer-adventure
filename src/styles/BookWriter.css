@@ -16,11 +16,11 @@
 
 .book-writer {
   background: white;
-  border-radius: 15px;
+  border-radius: 20px;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-  width: 90vw;
-  height: 85vh;
-  max-width: 1400px;
+  width: 98vw;
+  height: 95vh;
+  max-width: none;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -240,8 +240,8 @@
   display: flex !important;
   flex-direction: row !important;
   overflow: hidden;
-  min-height: 60vh;
-  height: 60vh;
+  min-height: 75vh;
+  height: 75vh;
   width: 100%;
   justify-content: stretch;
   align-items: stretch;
@@ -329,8 +329,12 @@
 /* Ensure both transcript sections have consistent width */
 .live-transcript-display,
 .dictated-content {
-  width: 100%;
+  width: 100% !important;
   margin-bottom: 1.5rem;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .live-transcript-display label,
@@ -344,32 +348,42 @@
 }
 
 /* Add styles for new elements */
-.transcript-controls,
-.dictation-tips {
+.transcript-controls {
   margin-top: 1rem;
 }
 
+.dictation-tips {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(0, 119, 190, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid var(--ocean-blue);
+}
+
 .dictation-tips h5 {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.4rem 0;
   color: var(--ocean-blue);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .dictation-tips ul {
   margin: 0;
   padding-left: 1.2rem;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--deep-sea);
+  line-height: 1.4;
 }
 
 .dictation-tips li {
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.2rem;
 }
 
 .transcript-text,
 .dictation-textarea {
-  width: 100%;
+  width: 100% !important;
   min-height: 120px;
+  max-width: 100%;
   padding: 1rem;
   background: white;
   border: 2px solid #e9ecef;
@@ -378,8 +392,9 @@
   font-size: 1rem;
   line-height: 1.6;
   color: #2c3e50;
-  box-sizing: border-box;
+  box-sizing: border-box !important;
   transition: var(--transition-smooth);
+  margin: 0;
 }
 
 .transcript-text {
@@ -733,9 +748,9 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .book-writer {
-    width: 100vw;
-    height: 100vh;
-    border-radius: 0;
+    width: 95vw;
+    height: 90vh;
+    border-radius: 10px;
   }
 
   .writer-content {
