@@ -174,11 +174,19 @@ const AddBookForm = ({ onAdd, onClose }) => {
 
 const WritingWorkspace = () => {
   const [currentTip, setCurrentTip] = useState(0);
-  const [notes, setNotes, { saveStatus }] = useAutoSaveData('notes', '');
+  const [notes, setNotes, { saveStatus, isLoading, lastSaved }] = useAutoSaveData('notes', '');
 
   const nextTip = () => {
     setCurrentTip((prev) => (prev + 1) % writingTips.length);
   };
+
+  // Debug logging for persistence
+  useEffect(() => {
+    console.log('WritingWorkspace: Notes state changed:', notes);
+    console.log('WritingWorkspace: Save status:', saveStatus);
+    console.log('WritingWorkspace: Last saved:', lastSaved);
+    console.log('WritingWorkspace: Is loading:', isLoading);
+  }, [notes, saveStatus, lastSaved, isLoading]);
 
   return (
     <motion.div
@@ -194,44 +202,49 @@ const WritingWorkspace = () => {
         <span className="workspace-icon">✍️</span>
       </div>
 
-      {/* Full Width Writing Area */}
-      <div className="notebook">
-        <div className="notebook-lines">
-          <div className="line"></div>
-          <div className="line"></div>
-          <div className="line"></div>
-          <div className="line"></div>
+      {/* Desktop Side-by-Side Layout */}
+      <div className="workspace-content">
+        {/* Writing Tip on Left (Desktop) */}
+        <div className="tip-section tip-section-left">
+          <h4>Writing Tip of the Day</h4>
+          <motion.div
+            className="tip-card-mini"
+            key={currentTip}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <p>{writingTips[currentTip]}</p>
+            <button onClick={nextTip} className="next-tip-btn">
+              Next Tip 💡
+            </button>
+          </motion.div>
         </div>
-        <div className="notes-container">
-          <textarea
-            className="writing-notes"
-            placeholder="Write your story ideas, notes, or start your book here..."
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-          />
-          <div className="notes-save-status">
-            {saveStatus === 'saving' && <span className="saving">💾 Saving...</span>}
-            {saveStatus === 'saved' && <span className="saved">✓</span>}
-            {saveStatus === 'error' && <span className="error">⚠</span>}
+
+        {/* Writing Area on Right */}
+        <div className="notebook">
+          <div className="notebook-lines">
+            <div className="line"></div>
+            <div className="line"></div>
+            <div className="line"></div>
+            <div className="line"></div>
+          </div>
+          <div className="notes-container">
+            <textarea
+              className="writing-notes"
+              placeholder="Write your story ideas, notes, or start your book here..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+            <div className="notes-save-status">
+              {isLoading && <span className="loading">🔄 Loading...</span>}
+              {saveStatus === 'saving' && <span className="saving">💾 Saving...</span>}
+              {saveStatus === 'saved' && <span className="saved">✓ Saved{lastSaved ? ` at ${lastSaved}` : ''}</span>}
+              {saveStatus === 'error' && <span className="error">⚠ Save Error</span>}
+              {!isLoading && notes.length > 0 && <span className="char-count">{notes.length} characters</span>}
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Writing Tip Below */}
-      <div className="tip-section">
-        <h4>Writing Tip of the Day</h4>
-        <motion.div
-          className="tip-card-mini"
-          key={currentTip}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <p>{writingTips[currentTip]}</p>
-          <button onClick={nextTip} className="next-tip-btn">
-            Next Tip 💡
-          </button>
-        </motion.div>
       </div>
     </motion.div>
   );

@@ -523,9 +523,22 @@
   background: var(--warm-sand);
 }
 
+/* Workspace Content Layout */
+.workspace-content {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  width: 100%;
+}
+
 /* Tip Section */
 .tip-section {
   text-align: center;
+}
+
+.tip-section-left {
+  flex: 0 0 300px;
+  text-align: left;
 }
 
 .tip-section h4 {
@@ -668,6 +681,16 @@
   .writing-workspace {
     padding: 1.5rem;
     gap: 1rem;
+  }
+
+  .workspace-content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .tip-section-left {
+    flex: none;
+    text-align: center;
   }
 
   .workspace-header {
