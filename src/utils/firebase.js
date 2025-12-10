@@ -142,6 +142,16 @@ export const summerDb = {
     return await demoDb.loadData('map_locations');
   },
 
+  // Save audio cache
+  async saveAudioCache(audioCache) {
+    return await demoDb.saveData('audio_cache', audioCache);
+  },
+
+  // Load audio cache
+  async loadAudioCache() {
+    return await demoDb.loadData('audio_cache');
+  },
+
   // Listen for data changes
   onTimelineChange(callback) {
     return demoDb.onDataChange('timeline_progress', callback);
@@ -161,6 +171,10 @@ export const summerDb = {
 
   onMapLocationsChange(callback) {
     return demoDb.onDataChange('map_locations', callback);
+  },
+
+  onAudioCacheChange(callback) {
+    return demoDb.onDataChange('audio_cache', callback);
   }
 };
 

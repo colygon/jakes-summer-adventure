@@ -1,11 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import audioCache from '../utils/audioCache';
 import '../styles/BookReader.css';
 
 const BookReader = ({ book, isOpen, onClose, onEdit }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
+  const [currentAudio, setCurrentAudio] = useState(null);
 
   // Sample book content - in real app this would come from the book data
   const sampleContent = {
@@ -48,75 +50,106 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
     };
   };
 
-  const generateAudio = async (text) => {
+  const generateAudioFromAPI = async (text) => {
+    console.log('Generating new audio with ElevenLabs API for text:', text);
+
+    const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/9IzcwKmvwJcw58h3KnlH', {
+      method: 'POST',
+      headers: {
+        'Accept': 'audio/mpeg',
+        'Content-Type': 'application/json',
+        'xi-api-key': 'sk_d8f2501b76b5baab289a04ac720e2a10cea9018e247e6a2d'
+      },
+      body: JSON.stringify({
+        text: text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.8,
+          style: 0.0,
+          use_speaker_boost: true
+        }
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('ElevenLabs API Error:', response.status, errorText);
+      throw new Error(`ElevenLabs API error: ${response.status} - ${errorText}`);
+    }
+
+    return await response.blob();
+  };
+
+  const setupAudioPlayback = (audioUrl, cached = false) => {
+    const audio = new Audio(audioUrl);
+    setCurrentAudio(audio);
+
+    // Set up event listeners
+    audio.oncanplaythrough = async () => {
+      try {
+        setIsGeneratingAudio(false);
+        setIsPlaying(true);
+        await audio.play();
+        console.log(`Audio started playing successfully ${cached ? '(from cache)' : '(newly generated)'}`);
+      } catch (playError) {
+        console.error('Error playing audio:', playError);
+        setIsPlaying(false);
+        alert('Failed to play audio. Please try again.');
+      }
+    };
+
+    audio.onended = () => {
+      console.log('Audio playback completed');
+      setIsPlaying(false);
+      setCurrentAudio(null);
+      if (!cached) {
+        URL.revokeObjectURL(audioUrl); // Clean up memory for new audio
+      }
+    };
+
+    audio.onerror = (e) => {
+      console.error('Audio playback error:', e);
+      setIsPlaying(false);
+      setIsGeneratingAudio(false);
+      setCurrentAudio(null);
+      if (!cached) {
+        URL.revokeObjectURL(audioUrl);
+      }
+      alert('Audio playback failed. Please try again.');
+    };
+
+    audio.load();
+    return audio;
+  };
+
+  const generateOrRetrieveAudio = async (text, bookId, pageIndex) => {
     setIsGeneratingAudio(true);
+
     try {
-      console.log('Generating audio with ElevenLabs API for text:', text);
+      // Check cache first
+      console.log('AudioCache: Checking for cached audio...');
+      const cachedAudio = await audioCache.getAudioFromCache(bookId, pageIndex, text);
 
-      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/9IzcwKmvwJcw58h3KnlH', {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': 'sk_d8f2501b76b5baab289a04ac720e2a10cea9018e247e6a2d'
-        },
-        body: JSON.stringify({
-          text: text,
-          model_id: 'eleven_multilingual_v2',
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.8,
-            style: 0.0,
-            use_speaker_boost: true
-          }
-        })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('ElevenLabs API Error:', response.status, errorText);
-        throw new Error(`ElevenLabs API error: ${response.status} - ${errorText}`);
+      if (cachedAudio) {
+        console.log('AudioCache: Using cached audio');
+        setupAudioPlayback(cachedAudio.audioUrl, true);
+        return;
       }
 
-      console.log('Audio generation successful, creating playback...');
-      const audioBlob = await response.blob();
+      // Generate new audio via API
+      console.log('AudioCache: Generating new audio...');
+      const audioBlob = await generateAudioFromAPI(text);
+
+      // Store in cache
+      await audioCache.storeAudioInCache(bookId, pageIndex, text, audioBlob);
+
+      // Create audio URL and play
       const audioUrl = URL.createObjectURL(audioBlob);
-
-      const audio = new Audio(audioUrl);
-
-      // Set up event listeners before attempting to play
-      audio.oncanplaythrough = async () => {
-        try {
-          setIsGeneratingAudio(false);
-          setIsPlaying(true);
-          await audio.play();
-          console.log('Audio started playing successfully');
-        } catch (playError) {
-          console.error('Error playing audio:', playError);
-          setIsPlaying(false);
-          alert('Failed to play audio. Please try again.');
-        }
-      };
-
-      audio.onended = () => {
-        console.log('Audio playback completed');
-        setIsPlaying(false);
-        URL.revokeObjectURL(audioUrl); // Clean up memory
-      };
-
-      audio.onerror = (e) => {
-        console.error('Audio playback error:', e);
-        setIsPlaying(false);
-        setIsGeneratingAudio(false);
-        URL.revokeObjectURL(audioUrl);
-        alert('Audio playback failed. Please try again.');
-      };
-
-      // Load the audio
-      audio.load();
+      setupAudioPlayback(audioUrl, false);
 
     } catch (error) {
-      console.error('Error generating audio with ElevenLabs API:', error);
+      console.error('Error with audio generation/caching:', error);
       setIsGeneratingAudio(false);
       setIsPlaying(false);
 
@@ -138,15 +171,21 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
 
     if (!textToRead) return;
 
-    // Prioritize ElevenLabs for high-quality text-to-speech
-    generateAudio(textToRead);
+    // Use the caching system to generate or retrieve audio
+    generateOrRetrieveAudio(textToRead, book?.id || 'unknown', currentPage);
   };
 
   const stopAudio = () => {
-    // Note: ElevenLabs SDK play() function doesn't provide direct stop control
-    // For now, we'll set the state to false and let the audio finish naturally
-    setIsPlaying(false);
-    console.log('Audio stop requested - ElevenLabs will finish current playback');
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      setIsPlaying(false);
+      setCurrentAudio(null);
+      console.log('Audio stopped and reset');
+    } else {
+      setIsPlaying(false);
+      console.log('Audio stop requested - no current audio to stop');
+    }
   };
 
   const nextPage = () => {
@@ -167,7 +206,13 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
     // Reset page when book changes
     setCurrentPage(0);
     setIsPlaying(false);
-  }, [book?.id]);
+
+    // Clean up any playing audio
+    if (currentAudio) {
+      currentAudio.pause();
+      setCurrentAudio(null);
+    }
+  }, [book?.id, currentAudio]);
 
   if (!isOpen || !book) return null;
 
@@ -221,7 +266,7 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
               </button>
 
               <div className="page-indicator">
-                Page {currentPage + 1} of {totalPages}
+                Pages {currentPage * 2 + 1}-{currentPage * 2 + 2}
               </div>
 
               <button
