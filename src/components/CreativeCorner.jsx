@@ -27,7 +27,7 @@ const initialBookIdeas = [
   {
     id: 3,
     title: "Summer of Discovery",
-    genre: "Coming-of-Age",
+    genre: "Adventure",
     description: "A summer that changes everything",
     pages: 25,
     targetPages: 200,
@@ -119,7 +119,6 @@ const generateBookCover = (book) => {
   const genreIcons = {
     'Adventure': '🏔️',
     'Educational Fiction': '🧮',
-    'Coming-of-Age': '🌅',
     'Fantasy': '✨',
     'Mystery': '🔍',
     'Sci-Fi': '🚀',
