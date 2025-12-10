@@ -383,7 +383,7 @@
 .transcript-text,
 .dictation-textarea {
   width: 100% !important;
-  min-height: 120px;
+  min-height: 200px;
   max-width: 100%;
   padding: 1rem;
   background: white;
