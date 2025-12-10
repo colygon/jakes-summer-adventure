@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useAutoSaveData } from '../hooks/useAutoSaveData';
 import '../styles/LearningTimeline.css';
 
 const initialEvents = [
@@ -187,7 +187,7 @@ const TimelineItem = ({ event, index, isActive, onClick, onProgressUpdate }) => 
 
 const LearningTimeline = () => {
   const [activeEvent, setActiveEvent] = useState(null);
-  const [timelineEvents, setTimelineEvents] = useLocalStorage('jakeTimelineProgress', initialEvents);
+  const [timelineEvents, setTimelineEvents, { isLoading, saveStatus, lastSaved }] = useAutoSaveData('timeline', initialEvents);
   const [totalProgress, setTotalProgress] = useState(0);
 
   useEffect(() => {
@@ -234,7 +234,15 @@ const LearningTimeline = () => {
         </motion.h2>
 
         <div className="overall-progress">
-          <h3>Overall Summer Progress: {totalProgress}%</h3>
+          <div className="progress-header">
+            <h3>Overall Summer Progress: {totalProgress}%</h3>
+            <div className="save-status">
+              {isLoading && <span className="status loading">Loading...</span>}
+              {!isLoading && saveStatus === 'saving' && <span className="status saving">Saving...</span>}
+              {!isLoading && saveStatus === 'saved' && <span className="status saved">✓ Saved{lastSaved ? ` at ${lastSaved}` : ''}</span>}
+              {!isLoading && saveStatus === 'error' && <span className="status error">⚠ Save failed</span>}
+            </div>
+          </div>
           <div className="overall-progress-bar">
             <motion.div
               className="overall-progress-fill"

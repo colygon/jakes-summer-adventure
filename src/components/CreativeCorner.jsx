@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useAutoSaveData } from '../hooks/useAutoSaveData';
 import '../styles/CreativeCorner.css';
 
 const initialBookIdeas = [
@@ -11,7 +11,7 @@ const initialBookIdeas = [
     description: "A tale of a boy and his dog exploring amazing places",
     pages: 0,
     targetPages: 150,
-    color: "from-green-400 to-blue-500"
+    color: "from-blue-500 to-purple-600"
   },
   {
     id: 2,
@@ -20,7 +20,7 @@ const initialBookIdeas = [
     description: "Discovering mathematical patterns in nature",
     pages: 12,
     targetPages: 100,
-    color: "from-purple-400 to-pink-500"
+    color: "from-teal-500 to-green-600"
   },
   {
     id: 3,
@@ -29,7 +29,7 @@ const initialBookIdeas = [
     description: "A summer that changes everything",
     pages: 25,
     targetPages: 200,
-    color: "from-orange-400 to-red-500"
+    color: "from-orange-500 to-red-600"
   }
 ];
 
@@ -141,12 +141,18 @@ const AddBookForm = ({ onAdd, onClose }) => {
     targetPages: 100
   });
 
+  // Beach and nature themed colors that stand out from sandy background
   const colors = [
-    "from-blue-400 to-purple-500",
-    "from-green-400 to-teal-500",
-    "from-yellow-400 to-orange-500",
-    "from-pink-400 to-red-500",
-    "from-indigo-400 to-blue-500"
+    "from-blue-500 to-purple-600",      // Ocean to deep purple
+    "from-green-500 to-teal-600",       // Seaweed to teal
+    "from-orange-500 to-red-600",       // Sunset orange to coral
+    "from-purple-500 to-pink-600",      // Purple to tropical pink
+    "from-blue-400 to-teal-500",        // Light ocean to turquoise
+    "from-teal-500 to-green-600",       // Turquoise to palm green
+    "from-red-500 to-orange-600",       // Coral to sunset
+    "from-indigo-500 to-purple-600",    // Deep ocean to purple
+    "from-cyan-500 to-blue-600",        // Cyan waves to ocean
+    "from-emerald-500 to-teal-600"      // Emerald sea to teal
   ];
 
   const handleSubmit = (e) => {
@@ -208,7 +214,7 @@ const AddBookForm = ({ onAdd, onClose }) => {
 
 const WritingWorkspace = () => {
   const [currentTip, setCurrentTip] = useState(0);
-  const [notes, setNotes] = useLocalStorage('jakeWritingNotes', '');
+  const [notes, setNotes, { saveStatus }] = useAutoSaveData('notes', '');
 
   const nextTip = () => {
     setCurrentTip((prev) => (prev + 1) % writingTips.length);
@@ -234,12 +240,19 @@ const WritingWorkspace = () => {
           <div className="line"></div>
           <div className="line"></div>
         </div>
-        <textarea
-          className="writing-notes"
-          placeholder="Write your story ideas, notes, or start your book here..."
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-        />
+        <div className="notes-container">
+          <textarea
+            className="writing-notes"
+            placeholder="Write your story ideas, notes, or start your book here..."
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+          />
+          <div className="notes-save-status">
+            {saveStatus === 'saving' && <span className="saving">💾 Saving...</span>}
+            {saveStatus === 'saved' && <span className="saved">✓</span>}
+            {saveStatus === 'error' && <span className="error">⚠</span>}
+          </div>
+        </div>
       </div>
 
       <div className="tip-section">
@@ -262,7 +275,7 @@ const WritingWorkspace = () => {
 };
 
 const CreativeCorner = () => {
-  const [bookIdeas, setBookIdeas] = useLocalStorage('jakeBookProjects', initialBookIdeas);
+  const [bookIdeas, setBookIdeas, { isLoading, saveStatus, lastSaved }] = useAutoSaveData('books', initialBookIdeas);
   const [showAddForm, setShowAddForm] = useState(false);
 
   const handleUpdatePages = (bookId, pages, targetPages) => {

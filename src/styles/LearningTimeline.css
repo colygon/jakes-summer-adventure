@@ -417,10 +417,50 @@
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 }
 
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
 .overall-progress h3 {
   font-family: var(--font-heading);
   font-size: 1.8rem;
-  margin-bottom: 1rem;
+  margin: 0;
+}
+
+.save-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status {
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status.loading {
+  background: rgba(255, 255, 255, 0.2);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.status.saving {
+  background: rgba(251, 191, 36, 0.3);
+  color: #fbbf24;
+}
+
+.status.saved {
+  background: rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+.status.error {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
 }
 
 .overall-progress-bar {
