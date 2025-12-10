@@ -4,7 +4,7 @@ import { useAutoSaveData } from '../hooks/useAutoSaveData';
 import '../styles/BookWriter.css';
 
 const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
-  const [bookContent, setBookContent] = useAutoSaveData('book_content', {});
+  const [bookContent, setBookContent, { saveStatus: contentSaveStatus }] = useAutoSaveData('book_content', {});
   const [currentChapter, setCurrentChapter] = useState(0);
   const [chapters, setChapters] = useState([]);
   const [isAddingChapter, setIsAddingChapter] = useState(false);
@@ -97,6 +97,13 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
     if (updatedChapters[currentChapter]) {
       updatedChapters[currentChapter].content = content;
       saveChapters(updatedChapters);
+
+      // Update the book pages count in the main book list
+      const totalWords = updatedChapters.reduce((sum, ch) =>
+        sum + (ch.content?.split(' ').filter(w => w.length > 0).length || 0), 0
+      );
+      const estimatedPages = Math.floor(totalWords / 250); // ~250 words per page
+      onUpdateBook(book.id, estimatedPages, book.targetPages);
     }
   };
 
@@ -379,7 +386,9 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
               Progress: {Math.round((getTotalWordCount() / (book.targetPages * 250)) * 100)}% of target
             </div>
             <div className="save-status">
-              Auto-saving your work...
+              {contentSaveStatus === 'saving' && <span className="saving">💾 Saving...</span>}
+              {contentSaveStatus === 'saved' && <span className="saved">✓ Auto-saved</span>}
+              {contentSaveStatus === 'error' && <span className="error">⚠ Save failed</span>}
             </div>
           </div>
         </motion.div>
