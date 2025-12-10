@@ -4,6 +4,8 @@
   background: linear-gradient(135deg, var(--warm-sand) 0%, var(--sandy-beige) 50%, var(--wave-foam) 100%);
   position: relative;
   overflow: hidden;
+  width: 100%;
+  max-width: 100vw;
 }
 
 .creative-section::before {
@@ -49,7 +51,7 @@
 
 .books-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 2rem;
   perspective: 1000px;
 }

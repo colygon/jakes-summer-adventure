@@ -4,6 +4,8 @@
   background: linear-gradient(135deg, var(--wave-foam) 0%, var(--light-blue) 100%);
   position: relative;
   overflow: hidden;
+  width: 100%;
+  max-width: 100vw;
 }
 
 .destinations-section::before {
@@ -27,7 +29,7 @@
 /* Destinations Grid */
 .destinations-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr));
   gap: 2rem;
   margin-top: 2rem;
 }
