@@ -66,21 +66,24 @@ export function useAutoSaveData(dataType, initialValue) {
   const autoSave = useCallback(
     createAutoSaver(async (newData) => {
       try {
+        console.log(`Auto-saving ${dataType} data:`, newData);
         setSaveStatus('saving');
         const { save } = getDbFunctions();
         const success = await save(newData);
 
         if (success) {
+          console.log(`Successfully saved ${dataType} data`);
           setSaveStatus('saved');
           setLastSaved(new Date().toLocaleTimeString());
         } else {
+          console.error(`Failed to save ${dataType} data`);
           setSaveStatus('error');
         }
       } catch (error) {
         console.error(`Error saving ${dataType} data:`, error);
         setSaveStatus('error');
       }
-    }, 800),
+    }, 300),
     [dataType, getDbFunctions]
   );
 

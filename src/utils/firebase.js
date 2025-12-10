@@ -38,6 +38,7 @@ class DemoFirestore {
   async saveData(path, data) {
     try {
       const key = `jake_summer_${path}`;
+      console.log(`Saving to localStorage with key: ${key}`, data);
       localStorage.setItem(key, JSON.stringify(data));
 
       // Simulate network delay
@@ -48,6 +49,7 @@ class DemoFirestore {
         this.listeners.get(path).forEach(callback => callback(data));
       }
 
+      console.log(`Successfully saved to localStorage: ${key}`);
       return true;
     } catch (error) {
       console.error('Error saving data:', error);
