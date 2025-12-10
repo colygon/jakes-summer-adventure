@@ -120,6 +120,16 @@ export const summerDb = {
     return await demoDb.loadData('writing_notes');
   },
 
+  // Save book content
+  async saveBookContent(content) {
+    return await demoDb.saveData('book_content', content);
+  },
+
+  // Load book content
+  async loadBookContent() {
+    return await demoDb.loadData('book_content');
+  },
+
   // Listen for data changes
   onTimelineChange(callback) {
     return demoDb.onDataChange('timeline_progress', callback);
@@ -131,6 +141,10 @@ export const summerDb = {
 
   onWritingNotesChange(callback) {
     return demoDb.onDataChange('writing_notes', callback);
+  },
+
+  onBookContentChange(callback) {
+    return demoDb.onDataChange('book_content', callback);
   }
 };
 

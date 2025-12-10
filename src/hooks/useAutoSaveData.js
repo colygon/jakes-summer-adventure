@@ -29,6 +29,12 @@ export function useAutoSaveData(dataType, initialValue) {
           load: summerDb.loadWritingNotes,
           onChange: summerDb.onWritingNotesChange
         };
+      case 'book_content':
+        return {
+          save: summerDb.saveBookContent,
+          load: summerDb.loadBookContent,
+          onChange: summerDb.onBookContentChange
+        };
       default:
         throw new Error(`Unknown data type: ${dataType}`);
     }
