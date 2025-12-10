@@ -7,6 +7,7 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioUrl, setAudioUrl] = useState(null);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
+  const [currentAudio, setCurrentAudio] = useState(null);
 
   // Sample book content - in real app this would come from the book data
   const sampleContent = {
@@ -52,23 +53,58 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
   const generateAudio = async (text) => {
     setIsGeneratingAudio(true);
     try {
-      // Simulate ElevenLabs API call
-      // In production, you'd make an actual API call to ElevenLabs
-      const mockApiCall = () => new Promise(resolve => {
-        setTimeout(() => {
-          // Create a mock audio blob URL
-          const mockAudioUrl = `data:audio/mp3;base64,mock-audio-data-${Date.now()}`;
-          resolve(mockAudioUrl);
-        }, 2000);
+      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM', {
+        method: 'POST',
+        headers: {
+          'Accept': 'audio/mpeg',
+          'Content-Type': 'application/json',
+          'xi-api-key': 'sk_9d405e53581c2fb9c01e14cfa8fdba846cc5c8655435759f'
+        },
+        body: JSON.stringify({
+          text: text,
+          model_id: 'eleven_monolingual_v1',
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.5
+          }
+        })
       });
 
-      const audioUrl = await mockApiCall();
+      if (!response.ok) {
+        throw new Error(`ElevenLabs API error: ${response.status}`);
+      }
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
       setAudioUrl(audioUrl);
       setIsGeneratingAudio(false);
+
+      // Play the generated audio
+      const audio = new Audio(audioUrl);
+      audio.onplay = () => setIsPlaying(true);
+      audio.onended = () => {
+        setIsPlaying(false);
+        setCurrentAudio(null);
+      };
+      audio.onerror = () => {
+        setIsPlaying(false);
+        setCurrentAudio(null);
+      };
+      setCurrentAudio(audio);
+      audio.play();
+
     } catch (error) {
       console.error('Error generating audio:', error);
       setIsGeneratingAudio(false);
-      alert('Audio generation failed. This is a demo - in production it would connect to ElevenLabs API.');
+      // Fallback to browser speech synthesis
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.8;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      utterance.onstart = () => setIsPlaying(true);
+      utterance.onend = () => setIsPlaying(false);
+      utterance.onerror = () => setIsPlaying(false);
+      speechSynthesis.speak(utterance);
     }
   };
 
@@ -78,28 +114,23 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
 
     if (!textToRead) return;
 
-    if ('speechSynthesis' in window) {
-      // Use browser's built-in speech synthesis as fallback
-      const utterance = new SpeechSynthesisUtterance(textToRead);
-      utterance.rate = 0.8;
-      utterance.pitch = 1;
-      utterance.volume = 1;
-
-      utterance.onstart = () => setIsPlaying(true);
-      utterance.onend = () => setIsPlaying(false);
-      utterance.onerror = () => setIsPlaying(false);
-
-      speechSynthesis.speak(utterance);
-    } else {
-      // Fallback to ElevenLabs generation
-      generateAudio(textToRead);
-    }
+    // Prioritize ElevenLabs for high-quality text-to-speech
+    generateAudio(textToRead);
   };
 
   const stopAudio = () => {
+    // Stop browser speech synthesis if running
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel();
     }
+
+    // Stop ElevenLabs audio if playing
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      setCurrentAudio(null);
+    }
+
     setIsPlaying(false);
   };
 
@@ -122,6 +153,15 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
     setCurrentPage(0);
     setIsPlaying(false);
     setAudioUrl(null);
+
+    // Stop any playing audio
+    if (currentAudio) {
+      currentAudio.pause();
+      setCurrentAudio(null);
+    }
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
   }, [book?.id]);
 
   if (!isOpen || !book) return null;
