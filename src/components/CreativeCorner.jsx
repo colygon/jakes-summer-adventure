@@ -302,31 +302,32 @@ const WritingWorkspace = () => {
       transition={{ duration: 0.8 }}
       viewport={{ once: true }}
     >
-      {/* Title Section */}
-      <div className="workspace-header">
-        <h3>Writing Workspace</h3>
-        <span className="workspace-icon">✍️</span>
-      </div>
+      {/* Title Section with Writing Tip Below */}
+      <div className="workspace-content-column">
+        <div className="workspace-header">
+          <h3>Writing Workspace</h3>
+          <span className="workspace-icon">✍️</span>
+        </div>
 
-      {/* Writing Tip Below Title */}
-      <div className="tip-section">
-        <h4>Writing Tip of the Day</h4>
-        <motion.div
-          className="tip-card-mini"
-          key={currentTip}
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <p>{writingTips[currentTip]}</p>
-          <button onClick={nextTip} className="next-tip-btn">
-            Next Tip 💡
-          </button>
-        </motion.div>
-      </div>
+        {/* Writing Tip Below Title in Same Column */}
+        <div className="tip-section">
+          <h4>Writing Tip of the Day</h4>
+          <motion.div
+            className="tip-card-mini"
+            key={currentTip}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <p>{writingTips[currentTip]}</p>
+            <button onClick={nextTip} className="next-tip-btn">
+              Next Tip 💡
+            </button>
+          </motion.div>
+        </div>
 
-      {/* Writing Area Full Width */}
-      <div className="notebook">
+        {/* Writing Area Below Tip */}
+        <div className="notebook">
           <div className="notebook-lines">
             <div className="line"></div>
             <div className="line"></div>
@@ -349,6 +350,7 @@ const WritingWorkspace = () => {
             </div>
           </div>
         </div>
+      </div>
     </motion.div>
   );
 };
