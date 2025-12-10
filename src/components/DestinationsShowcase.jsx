@@ -1,53 +1,37 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { useAutoSaveData } from '../hooks/useAutoSaveData';
 import '../styles/DestinationsShowcase.css';
 
-const destinations = [
-  {
-    id: 1,
-    name: "Galapagos Islands",
-    image: "🌊",
-    emoji: "🐢",
-    description: "Discover unique wildlife in this UNESCO World Heritage site",
-    highlights: [
-      "Giant tortoises",
-      "Marine iguanas",
-      "Blue-footed boobies",
-      "Snorkeling adventures"
-    ],
-    color: "from-blue-400 to-teal-500"
-  },
-  {
-    id: 2,
-    name: "Falmouth, Cape Cod",
-    image: "🏖️",
-    emoji: "🦞",
-    description: "Three weeks of coastal bliss and beach adventures",
-    highlights: [
-      "Sandy beaches",
-      "Historic lighthouses",
-      "Fresh seafood",
-      "Family time"
-    ],
-    color: "from-amber-300 to-orange-400"
-  },
-  {
-    id: 3,
-    name: "San Francisco",
-    image: "🏙️",
-    emoji: "🧮",
-    description: "Camp Lemma - Where math meets fun in the city",
-    highlights: [
-      "Interactive math problems",
-      "Golden Gate Bridge",
-      "Educational workshops",
-      "City exploration"
-    ],
-    color: "from-purple-400 to-pink-500"
-  }
-];
+const getDestinationFromMapLocation = (mapLocation) => {
+  // Convert map location to destination format
+  const colorOptions = [
+    "from-blue-400 to-teal-500",
+    "from-amber-300 to-orange-400",
+    "from-purple-400 to-pink-500",
+    "from-green-400 to-emerald-500",
+    "from-pink-400 to-rose-500",
+    "from-indigo-400 to-purple-500"
+  ];
 
-const DestinationCard = ({ destination, index }) => {
+  return {
+    id: mapLocation.id,
+    name: mapLocation.name,
+    image: mapLocation.icon,
+    emoji: mapLocation.icon,
+    description: mapLocation.description,
+    highlights: mapLocation.activities || [
+      "Explore local landmarks",
+      "Experience culture",
+      "Try local cuisine",
+      "Adventure activities"
+    ],
+    color: colorOptions[mapLocation.id % colorOptions.length],
+    isUserAdded: mapLocation.isUserAdded
+  };
+};
+
+const DestinationCard = ({ destination, index, onDelete }) => {
   const [ref, inView] = useInView({
     threshold: 0.3,
     triggerOnce: true
@@ -87,6 +71,16 @@ const DestinationCard = ({ destination, index }) => {
               </motion.span>
             ))}
           </div>
+
+          {destination.isUserAdded && (
+            <button
+              className="delete-destination-btn"
+              onClick={() => onDelete(destination.id)}
+              title="Delete this destination"
+            >
+              🗑️ Delete
+            </button>
+          )}
         </div>
       </div>
     </motion.div>
@@ -94,6 +88,17 @@ const DestinationCard = ({ destination, index }) => {
 };
 
 const DestinationsShowcase = () => {
+  const [mapLocations] = useAutoSaveData('map_locations', []);
+
+  const destinations = mapLocations.map(getDestinationFromMapLocation);
+
+  const handleDeleteDestination = (destinationId) => {
+    if (window.confirm('Are you sure you want to delete this destination?')) {
+      // The map component handles the deletion, but we can trigger a refresh here if needed
+      window.location.reload(); // Simple solution for now
+    }
+  };
+
   return (
     <section className="destinations-section">
       <motion.div
@@ -118,6 +123,7 @@ const DestinationsShowcase = () => {
               key={destination.id}
               destination={destination}
               index={index}
+              onDelete={handleDeleteDestination}
             />
           ))}
         </div>

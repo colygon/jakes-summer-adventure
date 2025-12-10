@@ -58,7 +58,7 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
         headers: {
           'Accept': 'audio/mpeg',
           'Content-Type': 'application/json',
-          'xi-api-key': 'sk_9d405e53581c2fb9c01e14cfa8fdba846cc5c8655435759f'
+          'xi-api-key': 'sk_018ce920c3ae7582901277a415e7b252c392ae0d4bc0c4dbc13eb7b0e93839e7'
         },
         body: JSON.stringify({
           text: text,

@@ -35,6 +35,12 @@ export function useAutoSaveData(dataType, initialValue) {
           load: summerDb.loadBookContent,
           onChange: summerDb.onBookContentChange
         };
+      case 'map_locations':
+        return {
+          save: summerDb.saveMapLocations,
+          load: summerDb.loadMapLocations,
+          onChange: summerDb.onMapLocationsChange
+        };
       default:
         throw new Error(`Unknown data type: ${dataType}`);
     }

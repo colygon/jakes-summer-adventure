@@ -132,6 +132,16 @@ export const summerDb = {
     return await demoDb.loadData('book_content');
   },
 
+  // Save map locations
+  async saveMapLocations(locations) {
+    return await demoDb.saveData('map_locations', locations);
+  },
+
+  // Load map locations
+  async loadMapLocations() {
+    return await demoDb.loadData('map_locations');
+  },
+
   // Listen for data changes
   onTimelineChange(callback) {
     return demoDb.onDataChange('timeline_progress', callback);
@@ -147,6 +157,10 @@ export const summerDb = {
 
   onBookContentChange(callback) {
     return demoDb.onDataChange('book_content', callback);
+  },
+
+  onMapLocationsChange(callback) {
+    return demoDb.onDataChange('map_locations', callback);
   }
 };
 
