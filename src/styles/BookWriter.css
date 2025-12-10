@@ -16,8 +16,8 @@
 
 .book-writer {
   background: white;
-  border-radius: 20px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  border-radius: 0;
+  box-shadow: none;
   width: 100vw;
   height: 100vh;
   max-width: none;

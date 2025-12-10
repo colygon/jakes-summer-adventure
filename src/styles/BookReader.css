@@ -10,16 +10,16 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 2rem;
+  padding: 0;
   backdrop-filter: blur(10px);
 }
 
 .book-reader {
   background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  border-radius: 20px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-  width: 98vw;
-  height: 95vh;
+  border-radius: 0;
+  box-shadow: none;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   position: relative;
