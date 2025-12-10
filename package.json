@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@elevenlabs/elevenlabs-js": "^2.27.0",
     "aos": "^2.3.4",
     "firebase": "^12.6.0",
     "framer-motion": "^12.23.25",

@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { ElevenLabsClient, play } from '@elevenlabs/elevenlabs-js';
 import '../styles/BookReader.css';
 
 const BookReader = ({ book, isOpen, onClose, onEdit }) => {
@@ -52,37 +51,84 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
   const generateAudio = async (text) => {
     setIsGeneratingAudio(true);
     try {
-      console.log('Generating audio with ElevenLabs SDK for text:', text);
+      console.log('Generating audio with ElevenLabs API for text:', text);
 
-      // Initialize ElevenLabs client
-      const elevenlabs = new ElevenLabsClient({
-        apiKey: "sk_9d405e53581c2fb9c01e14cfa8fdba846cc5c8655435759f"
+      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/9IzcwKmvwJcw58h3KnlH', {
+        method: 'POST',
+        headers: {
+          'Accept': 'audio/mpeg',
+          'Content-Type': 'application/json',
+          'xi-api-key': 'sk_9d405e53581c2fb9c01e14cfa8fdba846cc5c8655435759f'
+        },
+        body: JSON.stringify({
+          text: text,
+          model_id: 'eleven_multilingual_v2',
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.8,
+            style: 0.0,
+            use_speaker_boost: true
+          }
+        })
       });
 
-      // Generate audio using the SDK
-      const audio = await elevenlabs.textToSpeech.convert(
-        '9IzcwKmvwJcw58h3KnlH', // voice_id
-        {
-          text: text,
-          modelId: 'eleven_multilingual_v2',
-          outputFormat: 'mp3_44100_128'
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('ElevenLabs API Error:', response.status, errorText);
+        throw new Error(`ElevenLabs API error: ${response.status} - ${errorText}`);
+      }
+
+      console.log('Audio generation successful, creating playback...');
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+
+      const audio = new Audio(audioUrl);
+
+      // Set up event listeners before attempting to play
+      audio.oncanplaythrough = async () => {
+        try {
+          setIsGeneratingAudio(false);
+          setIsPlaying(true);
+          await audio.play();
+          console.log('Audio started playing successfully');
+        } catch (playError) {
+          console.error('Error playing audio:', playError);
+          setIsPlaying(false);
+          alert('Failed to play audio. Please try again.');
         }
-      );
+      };
 
-      setIsGeneratingAudio(false);
-      setIsPlaying(true);
+      audio.onended = () => {
+        console.log('Audio playback completed');
+        setIsPlaying(false);
+        URL.revokeObjectURL(audioUrl); // Clean up memory
+      };
 
-      // Play the audio using ElevenLabs play function
-      await play(audio);
+      audio.onerror = (e) => {
+        console.error('Audio playback error:', e);
+        setIsPlaying(false);
+        setIsGeneratingAudio(false);
+        URL.revokeObjectURL(audioUrl);
+        alert('Audio playback failed. Please try again.');
+      };
 
-      setIsPlaying(false);
-      console.log('Audio playback completed');
+      // Load the audio
+      audio.load();
 
     } catch (error) {
-      console.error('Error generating audio with ElevenLabs SDK:', error);
+      console.error('Error generating audio with ElevenLabs API:', error);
       setIsGeneratingAudio(false);
       setIsPlaying(false);
-      alert(`Audio generation failed: ${error.message}`);
+
+      if (error.message.includes('404')) {
+        alert('Voice not found. Please check the voice ID configuration.');
+      } else if (error.message.includes('401') || error.message.includes('403')) {
+        alert('Invalid API key. Please check your ElevenLabs API configuration.');
+      } else if (error.message.includes('429')) {
+        alert('Rate limit exceeded. Please wait a moment and try again.');
+      } else {
+        alert(`Audio generation failed: ${error.message}`);
+      }
     }
   };
 
