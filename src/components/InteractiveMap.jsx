@@ -36,14 +36,6 @@ const locations = [
     description: "Camp Lemma - Interactive math learning experience",
     icon: "🧮",
     details: "Educational math camp in the heart of San Francisco"
-  },
-  {
-    id: 4,
-    name: "Barnstable, Cape Cod",
-    coordinates: [41.7003, -70.3002],
-    description: "Family friend's house - social adventures",
-    icon: "🏡",
-    details: "Hanging out with friends and their kids, 45 minutes from main Cape Cod stay"
   }
 ];
 
@@ -71,6 +63,7 @@ const InteractiveMap = () => {
             center={[20, -40]}
             zoom={2}
             className="leaflet-map"
+            scrollWheelZoom={false}
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
