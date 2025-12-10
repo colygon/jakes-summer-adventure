@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useAutoSaveData } from '../hooks/useAutoSaveData';
+import BookReader from './BookReader';
+import BookWriter from './BookWriter';
 import '../styles/CreativeCorner.css';
 
 const initialBookIdeas = [
@@ -41,7 +43,7 @@ const writingTips = [
   "Read lots of books to inspire your own writing"
 ];
 
-const BookCard = ({ book, index, onUpdatePages, onDelete }) => {
+const BookCard = ({ book, index, onUpdatePages, onDelete, onRead, onWrite }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedBook, setEditedBook] = useState(book);
   const progressPercentage = (book.pages / book.targetPages) * 100;
@@ -88,6 +90,12 @@ const BookCard = ({ book, index, onUpdatePages, onDelete }) => {
                   ></motion.div>
                 </div>
                 <div className="book-actions">
+                  <button className="read-book-btn" onClick={() => onRead(book)}>
+                    📖 Read
+                  </button>
+                  <button className="write-book-btn" onClick={() => onWrite(book)}>
+                    ✍️ Write
+                  </button>
                   <button className="add-pages-btn" onClick={handleAddPages}>
                     +5 pages
                   </button>
@@ -277,6 +285,8 @@ const WritingWorkspace = () => {
 const CreativeCorner = () => {
   const [bookIdeas, setBookIdeas, { isLoading, saveStatus, lastSaved }] = useAutoSaveData('books', initialBookIdeas);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedBookForReading, setSelectedBookForReading] = useState(null);
+  const [selectedBookForWriting, setSelectedBookForWriting] = useState(null);
 
   const handleUpdatePages = (bookId, pages, targetPages) => {
     setBookIdeas(prevBooks =>
@@ -365,6 +375,8 @@ const CreativeCorner = () => {
                 index={index}
                 onUpdatePages={handleUpdatePages}
                 onDelete={handleDeleteBook}
+                onRead={(book) => setSelectedBookForReading(book)}
+                onWrite={(book) => setSelectedBookForWriting(book)}
               />
             ))}
           </div>
@@ -384,6 +396,25 @@ const CreativeCorner = () => {
             <cite>— B.B. King</cite>
           </blockquote>
         </motion.div>
+
+        {/* Book Reader Modal */}
+        <BookReader
+          book={selectedBookForReading}
+          isOpen={!!selectedBookForReading}
+          onClose={() => setSelectedBookForReading(null)}
+          onEdit={() => {
+            setSelectedBookForWriting(selectedBookForReading);
+            setSelectedBookForReading(null);
+          }}
+        />
+
+        {/* Book Writer Modal */}
+        <BookWriter
+          book={selectedBookForWriting}
+          isOpen={!!selectedBookForWriting}
+          onClose={() => setSelectedBookForWriting(null)}
+          onUpdateBook={handleUpdatePages}
+        />
       </motion.div>
     </section>
   );

@@ -301,11 +301,16 @@
 /* Book Actions */
 .book-actions {
   display: flex;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
   margin-top: 0.5rem;
 }
 
-.add-pages-btn, .edit-book-btn, .delete-book-btn {
+.read-book-btn,
+.write-book-btn,
+.add-pages-btn,
+.edit-book-btn,
+.delete-book-btn {
   padding: 0.3rem 0.6rem;
   background: rgba(255, 255, 255, 0.2);
   color: white;
@@ -315,6 +320,18 @@
   font-size: 0.8rem;
   transition: var(--transition-smooth);
   backdrop-filter: blur(10px);
+  flex: 1;
+  min-width: 70px;
+}
+
+.read-book-btn:hover {
+  background: rgba(59, 130, 246, 0.4);
+  transform: scale(1.05);
+}
+
+.write-book-btn:hover {
+  background: rgba(139, 69, 19, 0.4);
+  transform: scale(1.05);
 }
 
 .add-pages-btn:hover {
@@ -322,7 +339,7 @@
 }
 
 .edit-book-btn:hover {
-  background: rgba(59, 130, 246, 0.4);
+  background: rgba(168, 85, 247, 0.4);
 }
 
 .delete-book-btn:hover {
