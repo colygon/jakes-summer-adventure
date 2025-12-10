@@ -11,6 +11,13 @@ const Hero = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const scrollToNextSection = () => {
+    const nextSection = document.getElementById('map');
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <motion.section
       className="hero"
@@ -48,6 +55,8 @@ const Hero = () => {
           animate={{ scale: 1 }}
           transition={{ delay: 1.5, duration: 0.8, type: "spring" }}
           className="scroll-indicator"
+          onClick={scrollToNextSection}
+          style={{ cursor: 'pointer' }}
         >
           <div className="beach-ball"></div>
           <p>Scroll to explore</p>

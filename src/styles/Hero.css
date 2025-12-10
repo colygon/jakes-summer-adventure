@@ -97,6 +97,15 @@
   transform: scale(1.1);
 }
 
+.scroll-indicator:hover .beach-ball {
+  animation-duration: 0.5s;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.scroll-indicator:active .beach-ball {
+  transform: translateY(2px);
+}
+
 .beach-ball {
   width: 60px;
   height: 60px;

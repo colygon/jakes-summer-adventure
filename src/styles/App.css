@@ -143,9 +143,40 @@ body {
 }
 
 .footer-icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.footer-icon-btn {
+  background: none;
+  border: none;
   font-size: 2rem;
-  letter-spacing: 1rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   opacity: 0.8;
+}
+
+.footer-icon-btn:hover {
+  opacity: 1;
+  transform: translateY(-3px) scale(1.1);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.footer-icon-btn:active {
+  transform: translateY(-1px) scale(1.05);
+}
+
+.footer-icon-btn:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
 }
 
 /* Scrollbar Styling */
