@@ -308,27 +308,25 @@ const WritingWorkspace = () => {
         <span className="workspace-icon">✍️</span>
       </div>
 
-      {/* Desktop Side-by-Side Layout */}
-      <div className="workspace-content">
-        {/* Writing Tip on Left (Desktop) */}
-        <div className="tip-section tip-section-left">
-          <h4>Writing Tip of the Day</h4>
-          <motion.div
-            className="tip-card-mini"
-            key={currentTip}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <p>{writingTips[currentTip]}</p>
-            <button onClick={nextTip} className="next-tip-btn">
-              Next Tip 💡
-            </button>
-          </motion.div>
-        </div>
+      {/* Writing Tip Below Title */}
+      <div className="tip-section">
+        <h4>Writing Tip of the Day</h4>
+        <motion.div
+          className="tip-card-mini"
+          key={currentTip}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <p>{writingTips[currentTip]}</p>
+          <button onClick={nextTip} className="next-tip-btn">
+            Next Tip 💡
+          </button>
+        </motion.div>
+      </div>
 
-        {/* Writing Area on Right */}
-        <div className="notebook">
+      {/* Writing Area Full Width */}
+      <div className="notebook">
           <div className="notebook-lines">
             <div className="line"></div>
             <div className="line"></div>
@@ -351,7 +349,6 @@ const WritingWorkspace = () => {
             </div>
           </div>
         </div>
-      </div>
     </motion.div>
   );
 };
