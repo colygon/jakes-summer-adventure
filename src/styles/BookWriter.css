@@ -240,7 +240,8 @@
   display: flex !important;
   flex-direction: row !important;
   overflow: hidden;
-  min-height: 600px;
+  min-height: 80vh;
+  height: 80vh;
   width: 100%;
   justify-content: stretch;
   align-items: stretch;
@@ -359,7 +360,7 @@
 }
 
 .transcript-text {
-  min-height: 100px;
+  min-height: 120px;
   padding: 1rem;
   background: white;
   border: 2px solid #e9ecef;
@@ -379,7 +380,7 @@
 
 .dictation-textarea {
   flex: 1;
-  min-height: 150px;
+  min-height: 120px;
   padding: 1rem;
   border: 2px solid #e9ecef;
   border-radius: 10px;

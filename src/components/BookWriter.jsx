@@ -278,23 +278,9 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
             </div>
 
             <div className="writing-area">
-              <div className="chapter-header">
-                <h3>{chapters[currentChapter]?.title || 'Chapter'}</h3>
-                <div className="chapter-stats">
-                  {getWordCount()} words in this chapter
-                </div>
-              </div>
-
               <div className="writing-workspace">
                 {/* Live Transcript Panel (Left Page) */}
                 <div className="transcript-panel">
-                  <div className="transcript-header">
-                    <h4>Live Transcript</h4>
-                    <div className="mic-status">
-                      {isListening ? '🎤 Listening...' : '🎤 Ready'}
-                    </div>
-                  </div>
-
                   {/* Voice Control Buttons */}
                   <div className="voice-controls-inline">
                     {isSupported && (
@@ -349,15 +335,6 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
                     )}
                   </div>
 
-                  <div className="dictation-tips">
-                    <h5>Voice Tips:</h5>
-                    <ul>
-                      <li>Speak clearly and at normal pace</li>
-                      <li>Use punctuation commands: "period", "comma"</li>
-                      <li>Edit text above before adding to chapter</li>
-                      <li>Say "new paragraph" for line breaks</li>
-                    </ul>
-                  </div>
                 </div>
 
                 {/* Chapter Text Panel (Right Page) */}
@@ -390,15 +367,6 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
                     placeholder="Your chapter content appears here. Use voice dictation on the left to add content..."
                   />
 
-                  <div className="writing-tips">
-                    <h5>Writing Tips:</h5>
-                    <ul>
-                      <li>Write in short, clear sentences</li>
-                      <li>Use the dictation panel to speak naturally</li>
-                      <li>Review and edit dictated text before adding</li>
-                      <li>Save frequently - your work auto-saves</li>
-                    </ul>
-                  </div>
                 </div>
               </div>
             </div>
