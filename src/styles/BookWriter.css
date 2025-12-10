@@ -958,3 +958,65 @@
   cursor: not-allowed;
   transform: none;
 }
+
+/* Container styles for corner buttons */
+.transcript-container,
+.textarea-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Corner button positioning */
+.corner-btn {
+  position: absolute;
+  bottom: 8px;
+  z-index: 10;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.corner-btn-right {
+  right: 8px;
+}
+
+.corner-btn-left {
+  left: 8px;
+}
+
+/* Button specific styles */
+.corner-btn.dictate-btn {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--seaweed-green));
+  color: white;
+}
+
+.corner-btn.dictate-btn.listening {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  animation: pulse 1.5s infinite;
+}
+
+.corner-btn.insert-btn {
+  background: linear-gradient(135deg, var(--seaweed-green), #28a745);
+  color: white;
+}
+
+.corner-btn.clear-btn {
+  background: linear-gradient(135deg, #ffc107, #fd7e14);
+  color: white;
+}
+
+.corner-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.corner-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}

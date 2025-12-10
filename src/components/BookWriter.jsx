@@ -402,58 +402,70 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
                 {/* Live Transcript Panel (Left Page) */}
                 <div className="transcript-panel">
                   {/* Voice Control Buttons */}
-                  <div className="voice-controls-inline">
-                    {isSupported && (
-                      <>
-                        <button
-                          className={`dictate-btn ${isListening ? 'listening' : ''}`}
-                          onClick={isListening ? stopDictation : startDictation}
-                        >
-                          {isListening ? '⏹️ Stop' : '🎤 Dictate'}
-                        </button>
-                        <button
-                          className="clear-btn"
-                          onClick={clearDictation}
-                          disabled={!dictationText}
-                        >
-                          🗑️ Clear
-                        </button>
-                        <button
-                          className="insert-btn"
-                          onClick={insertDictationToChapter}
-                          disabled={!dictationText.trim()}
-                        >
-                          {showAddedFeedback ? '✅ Added!' : '➡️ Add to Chapter'}
-                        </button>
-                      </>
-                    )}
+                  {!isSupported && (
+                    <div className="voice-controls-inline">
+                      <div className="unsupported-message">
+                        Speech recognition not supported in this browser
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="dictation-tips">
+                    <h5>Voice Tips:</h5>
+                    <ul>
+                      <li>Speak clearly and at normal pace</li>
+                      <li>Use punctuation commands: "period", "comma", "question mark"</li>
+                      <li>Say "new paragraph" for line breaks</li>
+                      <li>Edit your text before adding to chapter</li>
+                    </ul>
                   </div>
 
                   <div className="live-transcript-display">
                     <label>Speech Recognition:</label>
-                    <div className={`transcript-text ${isListening ? 'listening' : ''}`}>
-                      {transcript || (isListening ? "Start speaking..." : "Click 'Dictate' to begin")}
-                    </div>
-                    <div className="dictation-tips">
-                      <h5>Voice Tips:</h5>
-                      <ul>
-                        <li>Speak clearly and at normal pace</li>
-                        <li>Use punctuation commands: "period", "comma", "question mark"</li>
-                        <li>Say "new paragraph" for line breaks</li>
-                        <li>Edit your text before adding to chapter</li>
-                      </ul>
+                    <div className="transcript-container">
+                      <div className={`transcript-text ${isListening ? 'listening' : ''}`}>
+                        {transcript || (isListening ? "Start speaking..." : "Click 'Dictate' to begin")}
+                      </div>
+                      {isSupported && (
+                        <button
+                          className={`dictate-btn corner-btn corner-btn-right ${isListening ? 'listening' : ''}`}
+                          onClick={isListening ? stopDictation : startDictation}
+                        >
+                          {isListening ? '⏹️ Stop' : '🎤 Dictate'}
+                        </button>
+                      )}
                     </div>
                   </div>
 
                   <div className="dictated-content">
                     <label>Dictated Text (Edit before adding):</label>
-                    <textarea
-                      ref={dictationRef}
-                      className="dictation-textarea"
-                      value={dictationText}
-                      onChange={(e) => setDictationText(e.target.value)}
-                      placeholder="Your dictated text will appear here for editing..."
-                    />
+                    <div className="textarea-container">
+                      <textarea
+                        ref={dictationRef}
+                        className="dictation-textarea"
+                        value={dictationText}
+                        onChange={(e) => setDictationText(e.target.value)}
+                        placeholder="Your dictated text will appear here for editing..."
+                      />
+                      {isSupported && (
+                        <>
+                          <button
+                            className="clear-btn corner-btn corner-btn-left"
+                            onClick={clearDictation}
+                            disabled={!dictationText}
+                          >
+                            🗑️ Clear
+                          </button>
+                          <button
+                            className="insert-btn corner-btn corner-btn-right"
+                            onClick={insertDictationToChapter}
+                            disabled={!dictationText.trim()}
+                          >
+                            {showAddedFeedback ? '✅ Added!' : '➡️ Add to Chapter'}
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
 
                   <div className="transcript-controls">

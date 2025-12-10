@@ -50,7 +50,7 @@
 }
 
 .book-shelf h3::before {
-  content: '📚';
+  content: '';
   position: absolute;
   left: -50px;
   top: 50%;
