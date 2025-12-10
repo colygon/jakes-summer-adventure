@@ -1,13 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { ElevenLabsClient, play } from '@elevenlabs/elevenlabs-js';
 import '../styles/BookReader.css';
 
 const BookReader = ({ book, isOpen, onClose, onEdit }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [audioUrl, setAudioUrl] = useState(null);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
-  const [currentAudio, setCurrentAudio] = useState(null);
 
   // Sample book content - in real app this would come from the book data
   const sampleContent = {
@@ -53,51 +52,37 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
   const generateAudio = async (text) => {
     setIsGeneratingAudio(true);
     try {
-      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/9IzcwKmvwJcw58h3KnlH', {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': 'sk_9d405e53581c2fb9c01e14cfa8fdba846cc5c8655435759f'
-        },
-        body: JSON.stringify({
-          text: text,
-          model_id: 'eleven_monolingual_v1',
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.5
-          }
-        })
+      console.log('Generating audio with ElevenLabs SDK for text:', text);
+
+      // Initialize ElevenLabs client
+      const elevenlabs = new ElevenLabsClient({
+        apiKey: "sk_9d405e53581c2fb9c01e14cfa8fdba846cc5c8655435759f"
       });
 
-      if (!response.ok) {
-        throw new Error(`ElevenLabs API error: ${response.status}`);
-      }
+      // Generate audio using the SDK
+      const audio = await elevenlabs.textToSpeech.convert(
+        '9IzcwKmvwJcw58h3KnlH', // voice_id
+        {
+          text: text,
+          modelId: 'eleven_multilingual_v2',
+          outputFormat: 'mp3_44100_128'
+        }
+      );
 
-      const audioBlob = await response.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
-      setAudioUrl(audioUrl);
       setIsGeneratingAudio(false);
+      setIsPlaying(true);
 
-      // Play the generated audio
-      const audio = new Audio(audioUrl);
-      audio.onplay = () => setIsPlaying(true);
-      audio.onended = () => {
-        setIsPlaying(false);
-        setCurrentAudio(null);
-      };
-      audio.onerror = () => {
-        setIsPlaying(false);
-        setCurrentAudio(null);
-      };
-      setCurrentAudio(audio);
-      audio.play();
+      // Play the audio using ElevenLabs play function
+      await play(audio);
+
+      setIsPlaying(false);
+      console.log('Audio playback completed');
 
     } catch (error) {
-      console.error('Error generating audio with ElevenLabs:', error);
+      console.error('Error generating audio with ElevenLabs SDK:', error);
       setIsGeneratingAudio(false);
       setIsPlaying(false);
-      alert('Audio generation failed. Please check your internet connection and try again.');
+      alert(`Audio generation failed: ${error.message}`);
     }
   };
 
@@ -112,14 +97,10 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
   };
 
   const stopAudio = () => {
-    // Stop ElevenLabs audio if playing
-    if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
-      setCurrentAudio(null);
-    }
-
+    // Note: ElevenLabs SDK play() function doesn't provide direct stop control
+    // For now, we'll set the state to false and let the audio finish naturally
     setIsPlaying(false);
+    console.log('Audio stop requested - ElevenLabs will finish current playback');
   };
 
   const nextPage = () => {
@@ -140,13 +121,6 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
     // Reset page when book changes
     setCurrentPage(0);
     setIsPlaying(false);
-    setAudioUrl(null);
-
-    // Stop any playing audio
-    if (currentAudio) {
-      currentAudio.pause();
-      setCurrentAudio(null);
-    }
   }, [book?.id]);
 
   if (!isOpen || !book) return null;
