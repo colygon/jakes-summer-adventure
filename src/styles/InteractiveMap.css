@@ -29,6 +29,13 @@
   animation: float 3s ease-in-out infinite;
 }
 
+@media (max-width: 768px) {
+  .map-title::after {
+    right: -40px;
+    font-size: 1.5rem;
+  }
+}
+
 /* Map Wrapper */
 .map-wrapper {
   position: relative;

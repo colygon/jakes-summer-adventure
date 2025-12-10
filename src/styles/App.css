@@ -35,6 +35,16 @@
   box-sizing: border-box;
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Prevent horizontal overflow */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 html {
   scroll-behavior: smooth;
   font-size: 16px;
@@ -46,12 +56,17 @@ body {
   color: var(--deep-sea);
   background: linear-gradient(135deg, var(--wave-foam) 0%, var(--sandy-beige) 100%);
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
 }
 
 /* Main App Container */
 .app {
   min-height: 100vh;
   position: relative;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
 }
 
 /* Section Title Styles */

@@ -294,9 +294,15 @@
   content: '📚 🧮 ✍️ 🌟';
   position: absolute;
   top: 15%;
-  right: 5%;
+  right: 2%;
   font-size: 1.5rem;
   opacity: 0.2;
   animation: float 8s ease-in-out infinite;
   z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .learning-section::after {
+    display: none;
+  }
 }

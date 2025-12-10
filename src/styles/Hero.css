@@ -18,6 +18,7 @@
   height: 100%;
   pointer-events: none;
   z-index: 1;
+  overflow: hidden;
 }
 
 .wave {
@@ -29,6 +30,7 @@
   background-repeat: repeat-x;
   animation: wave-move 8s linear infinite;
   opacity: 0.7;
+  will-change: transform;
 }
 
 .wave1 {

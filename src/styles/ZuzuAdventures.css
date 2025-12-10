@@ -332,9 +332,15 @@
   content: '🐕 🦴 🎾';
   position: absolute;
   top: 20%;
-  left: 5%;
+  left: 2%;
   font-size: 2rem;
   opacity: 0.2;
   animation: float 7s ease-in-out infinite;
   z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .zuzu-section::after {
+    display: none;
+  }
 }

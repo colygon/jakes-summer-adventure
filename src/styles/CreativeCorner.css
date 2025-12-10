@@ -437,9 +437,15 @@
   content: '✍️ 📝 💡 📖';
   position: absolute;
   bottom: 10%;
-  right: 5%;
+  right: 2%;
   font-size: 1.8rem;
   opacity: 0.2;
   animation: float 9s ease-in-out infinite;
   z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .creative-section::after {
+    display: none;
+  }
 }
