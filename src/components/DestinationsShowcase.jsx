@@ -88,14 +88,15 @@ const DestinationCard = ({ destination, index, onDelete }) => {
 };
 
 const DestinationsShowcase = () => {
-  const [mapLocations] = useAutoSaveData('map_locations', []);
+  const [mapLocations, setMapLocations] = useAutoSaveData('map_locations', []);
 
   const destinations = mapLocations.map(getDestinationFromMapLocation);
 
   const handleDeleteDestination = (destinationId) => {
     if (window.confirm('Are you sure you want to delete this destination?')) {
-      // The map component handles the deletion, but we can trigger a refresh here if needed
-      window.location.reload(); // Simple solution for now
+      setMapLocations(prevLocations =>
+        prevLocations.filter(location => location.id !== destinationId)
+      );
     }
   };
 

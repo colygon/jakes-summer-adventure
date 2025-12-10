@@ -236,11 +236,13 @@ const WritingWorkspace = () => {
       transition={{ duration: 0.8 }}
       viewport={{ once: true }}
     >
+      {/* Title Section */}
       <div className="workspace-header">
         <h3>Writing Workspace</h3>
         <span className="workspace-icon">✍️</span>
       </div>
 
+      {/* Full Width Writing Area */}
       <div className="notebook">
         <div className="notebook-lines">
           <div className="line"></div>
@@ -263,6 +265,7 @@ const WritingWorkspace = () => {
         </div>
       </div>
 
+      {/* Writing Tip Below */}
       <div className="tip-section">
         <h4>Writing Tip of the Day</h4>
         <motion.div
