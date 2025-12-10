@@ -11,56 +11,56 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
   const [currentAudio, setCurrentAudio] = useState(null);
   const [bookContent, setBookContent] = useAutoSaveData('book_content', {});
 
-  // Sample book content - in real app this would come from the book data
-  const sampleContent = {
-    1: [
-      "Once upon a time, in a small coastal town, there lived a young boy named Jake.",
-      "Jake had always dreamed of grand adventures, but never imagined his summer would be so extraordinary.",
-      "With his faithful companion Zuzu, a golden retriever with boundless energy, Jake was about to embark on the journey of a lifetime.",
-      "Little did he know that mathematics, nature, and creativity would intertwine in the most magical ways."
-    ],
-    2: [
-      "The Galapagos Islands held secrets that could only be unlocked through mathematical thinking.",
-      "As Jake observed the unique wildlife, he began to see patterns everywhere - in the shells of tortoises, the flight patterns of birds, and the spiral formations of marine life.",
-      "Each discovery led to a new mathematical concept, making learning an adventure rather than a chore.",
-      "Zuzu seemed to understand the importance of these moments, sitting quietly as Jake sketched his observations."
-    ],
-    3: [
-      "The summer sun cast long shadows as Jake reflected on all his adventures.",
-      "From the mathematical wonders of the Galapagos to the peaceful beaches of Falmouth, every experience had shaped him.",
-      "Writing had become his way of preserving these memories, and with each page, he felt himself growing.",
-      "This was more than just a summer - it was a transformation, a discovery of who he was meant to become."
-    ]
-  };
 
-  // Get actual book content from database or use fallback
+  // Get actual book content from database - always use real content, never sample
   const getBookContent = () => {
-    if (book && bookContent[book.id] && bookContent[book.id].chapters) {
-      // Convert chapters to readable content
+    if (!book) {
+      return [];
+    }
+
+    // Always try to get from database first
+    if (bookContent[book.id] && bookContent[book.id].chapters) {
       const chapters = bookContent[book.id].chapters;
       const contentArray = [];
 
-      chapters.forEach(chapter => {
+      chapters.forEach((chapter, index) => {
         if (chapter.content && chapter.content.trim()) {
-          // Split chapter content into readable chunks (paragraphs)
-          const paragraphs = chapter.content.split('\n').filter(p => p.trim());
-          contentArray.push(...paragraphs);
+          // Add chapter title if it's not the first chapter or if it has a meaningful title
+          if (chapter.title && chapter.title !== 'The Beginning' && chapter.title !== 'Chapter') {
+            contentArray.push(`--- ${chapter.title} ---`);
+          }
+
+          // Split chapter content into readable chunks (sentences grouped into paragraphs)
+          const sentences = chapter.content
+            .split(/[.!?]+/)
+            .map(s => s.trim())
+            .filter(s => s.length > 0)
+            .map(s => s + '.');
+
+          // Group sentences into readable chunks (about 2-3 sentences per page)
+          for (let i = 0; i < sentences.length; i += 2) {
+            const chunk = sentences.slice(i, i + 2).join(' ');
+            if (chunk.trim()) {
+              contentArray.push(chunk.trim());
+            }
+          }
         }
       });
 
-      return contentArray.length > 0 ? contentArray : [
-        `"${book.title}" is ready for your words.`,
-        "Start writing to see your story come to life here!",
-        "Each chapter you write will appear as pages to read.",
-        "Your creativity is the only limit to this adventure."
-      ];
+      // If we have real content, use it
+      if (contentArray.length > 0) {
+        console.log('BookReader: Using database content for book', book.title, '- found', contentArray.length, 'paragraphs');
+        return contentArray;
+      }
     }
 
-    return sampleContent[book?.id] || [
-      `This is the beginning of "${book?.title}" by Jake.`,
-      "Every great story starts with a single word, a single idea.",
-      "As you read these pages, imagine the adventures that await.",
-      "The story continues to grow with each passing day..."
+    // Only use fallback message if no database content exists
+    console.log('BookReader: No database content found for book', book.title, '- showing placeholder');
+    return [
+      `"${book.title}" is ready for your words.`,
+      "Start writing to see your story come to life here!",
+      "Each chapter you write will appear as pages to read.",
+      "Your creativity is the only limit to this adventure."
     ];
   };
 
@@ -231,7 +231,7 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
   const currentPageContent = getPageContent(currentPage);
 
   useEffect(() => {
-    // Reset page when book changes
+    // Reset page when book changes or content updates
     setCurrentPage(0);
     setIsPlaying(false);
 
@@ -240,7 +240,9 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
       currentAudio.pause();
       setCurrentAudio(null);
     }
-  }, [book?.id, bookContent, currentAudio]);
+
+    console.log('BookReader: Book or content changed, refreshing pages');
+  }, [book?.id, bookContent]);
 
   if (!isOpen || !book) return null;
 

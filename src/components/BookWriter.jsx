@@ -18,6 +18,12 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
   const [dictationText, setDictationText] = useState('');
   const [showAddedFeedback, setShowAddedFeedback] = useState(false);
   const dictationRef = useRef(null);
+  const isListeningRef = useRef(false);
+
+  // Target page editing state
+  const [isEditingTarget, setIsEditingTarget] = useState(false);
+  const [targetPageInput, setTargetPageInput] = useState('');
+  const [showTargetFeedback, setShowTargetFeedback] = useState(false);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -51,11 +57,47 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
 
       recognitionInstance.onerror = (event) => {
         console.error('Speech recognition error:', event.error);
-        setIsListening(false);
+
+        // Handle specific errors for Brave browser
+        if (event.error === 'not-allowed') {
+          setIsListening(false);
+          isListeningRef.current = false;
+          alert('Microphone access denied. Please allow microphone access in your browser settings.');
+        } else if (event.error === 'no-speech') {
+          console.log('No speech detected, continuing...');
+          // Don't stop for no-speech errors, just continue
+          return;
+        } else if (event.error === 'aborted') {
+          console.log('Speech recognition aborted');
+          setIsListening(false);
+          isListeningRef.current = false;
+        } else {
+          setIsListening(false);
+          isListeningRef.current = false;
+          alert(`Speech recognition error: ${event.error}`);
+        }
       };
 
       recognitionInstance.onend = () => {
-        setIsListening(false);
+        console.log('Speech recognition ended');
+        // If we're supposed to be listening but recognition ended, try to restart
+        if (isListeningRef.current) {
+          console.log('Attempting to restart speech recognition...');
+          setTimeout(() => {
+            if (isListeningRef.current && recognitionInstance) {
+              try {
+                recognitionInstance.start();
+              } catch (error) {
+                console.error('Failed to restart recognition:', error);
+                setIsListening(false);
+                isListeningRef.current = false;
+              }
+            }
+          }, 100);
+        } else {
+          setIsListening(false);
+          isListeningRef.current = false;
+        }
       };
 
       setRecognition(recognitionInstance);
@@ -67,7 +109,18 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
 
   useEffect(() => {
     if (book && bookContent[book.id]) {
-      setChapters(bookContent[book.id].chapters || []);
+      const chapters = bookContent[book.id].chapters || [];
+      setChapters(chapters);
+      console.log('BookWriter: Loaded existing chapters:', chapters.length);
+
+      // Update page count on load
+      const totalWords = chapters.reduce((sum, ch) =>
+        sum + (ch.content?.split(' ').filter(w => w.length > 0).length || 0), 0
+      );
+      const estimatedPages = Math.floor(totalWords / 250);
+      console.log('BookWriter: Initial page count update:', { totalWords, estimatedPages });
+      onUpdateBook(book.id, estimatedPages, book.targetPages);
+
     } else if (book) {
       // Initialize with sample content
       const initialChapters = [
@@ -82,16 +135,28 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
         ...prev,
         [book.id]: { chapters: initialChapters }
       }));
+      console.log('BookWriter: Created initial chapters for new book');
+
+      // Set initial page count
+      const totalWords = initialChapters.reduce((sum, ch) =>
+        sum + (ch.content?.split(' ').filter(w => w.length > 0).length || 0), 0
+      );
+      const estimatedPages = Math.floor(totalWords / 250);
+      onUpdateBook(book.id, estimatedPages, book.targetPages);
     }
   }, [book, bookContent]);
 
   const saveChapters = (newChapters) => {
-    console.log('Saving chapters to database:', newChapters.length, 'chapters for book', book.id);
+    console.log('BookWriter: Saving chapters to database:', newChapters.length, 'chapters for book', book.id);
     setChapters(newChapters);
-    setBookContent(prev => ({
-      ...prev,
-      [book.id]: { chapters: newChapters }
-    }));
+    setBookContent(prev => {
+      const updated = {
+        ...prev,
+        [book.id]: { chapters: newChapters }
+      };
+      console.log('BookWriter: Updated book content state:', updated);
+      return updated;
+    });
   };
 
   const updateCurrentChapter = (content) => {
@@ -105,6 +170,12 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
         sum + (ch.content?.split(' ').filter(w => w.length > 0).length || 0), 0
       );
       const estimatedPages = Math.floor(totalWords / 250); // ~250 words per page
+      console.log('BookWriter: Updating page count:', {
+        bookId: book.id,
+        totalWords,
+        estimatedPages,
+        targetPages: book.targetPages
+      });
       onUpdateBook(book.id, estimatedPages, book.targetPages);
     }
   };
@@ -124,7 +195,7 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
 
       // Update book pages count
       const totalWords = updatedChapters.reduce((sum, ch) =>
-        sum + (ch.content?.split(' ').length || 0), 0
+        sum + (ch.content?.split(' ').filter(w => w.length > 0).length || 0), 0
       );
       const estimatedPages = Math.floor(totalWords / 250); // ~250 words per page
       onUpdateBook(book.id, estimatedPages, book.targetPages);
@@ -138,6 +209,13 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
       if (currentChapter >= updatedChapters.length) {
         setCurrentChapter(updatedChapters.length - 1);
       }
+
+      // Update book pages count after deletion
+      const totalWords = updatedChapters.reduce((sum, ch) =>
+        sum + (ch.content?.split(' ').filter(w => w.length > 0).length || 0), 0
+      );
+      const estimatedPages = Math.floor(totalWords / 250); // ~250 words per page
+      onUpdateBook(book.id, estimatedPages, book.targetPages);
     }
   };
 
@@ -153,18 +231,38 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
   };
 
   // Speech recognition functions
-  const startDictation = () => {
+  const startDictation = async () => {
     if (recognition && isSupported && !isListening) {
-      setTranscript('');
-      setIsListening(true);
-      recognition.start();
+      try {
+        // Check microphone permissions first
+        if (navigator.permissions) {
+          const permission = await navigator.permissions.query({ name: 'microphone' });
+          if (permission.state === 'denied') {
+            alert('Microphone access is blocked. Please enable microphone access in your browser settings and refresh the page.');
+            return;
+          }
+        }
+
+        setTranscript('');
+        setIsListening(true);
+        isListeningRef.current = true;
+        recognition.start();
+        console.log('Speech recognition started');
+      } catch (error) {
+        console.error('Error starting speech recognition:', error);
+        setIsListening(false);
+        isListeningRef.current = false;
+        alert('Failed to start speech recognition. Please check your microphone permissions.');
+      }
     }
   };
 
   const stopDictation = () => {
     if (recognition && isListening) {
+      isListeningRef.current = false;
       recognition.stop();
       setIsListening(false);
+      console.log('Speech recognition stopped by user');
     }
   };
 
@@ -194,6 +292,28 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
       // Provide user feedback
       console.log('Dictated text added to chapter and saved to database');
     }
+  };
+
+  // Target page functions
+  const startEditingTarget = () => {
+    setIsEditingTarget(true);
+    setTargetPageInput(book.targetPages.toString());
+  };
+
+  const saveTargetPages = () => {
+    const newTarget = parseInt(targetPageInput);
+    if (newTarget && newTarget > 0) {
+      onUpdateBook(book.id, book.pages, newTarget);
+      setIsEditingTarget(false);
+      setShowTargetFeedback(true);
+      setTimeout(() => setShowTargetFeedback(false), 2000);
+      console.log('Updated target pages to:', newTarget);
+    }
+  };
+
+  const cancelEditingTarget = () => {
+    setIsEditingTarget(false);
+    setTargetPageInput('');
   };
 
   if (!isOpen || !book) return null;
@@ -335,6 +455,16 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
                     )}
                   </div>
 
+                  <div className="dictation-tips">
+                    <h5>Voice Tips:</h5>
+                    <ul>
+                      <li>Speak clearly and at normal pace</li>
+                      <li>Use punctuation commands: "period", "comma", "question mark"</li>
+                      <li>Say "new paragraph" for line breaks</li>
+                      <li>Edit your text before adding to chapter</li>
+                    </ul>
+                  </div>
+
                 </div>
 
                 {/* Chapter Text Panel (Right Page) */}
@@ -356,6 +486,23 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
                         }}
                       >
                         📝 Format
+                      </button>
+                      <button
+                        className="turn-to-book-btn"
+                        onClick={() => {
+                          onClose();
+                          // Trigger the book reader view
+                          if (onEdit) {
+                            // Use onEdit callback to switch to read mode
+                            setTimeout(() => {
+                              // This will be handled by the parent component
+                              const event = new CustomEvent('openBookReader', { detail: { book } });
+                              window.dispatchEvent(event);
+                            }, 100);
+                          }
+                        }}
+                      >
+                        📖 Turn into Book
                       </button>
                     </div>
                   </div>
@@ -381,6 +528,25 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
             </div>
             <div className="progress-info">
               Progress: {Math.round((getTotalWordCount() / (book.targetPages * 250)) * 100)}% of target
+              {!isEditingTarget ? (
+                <button className="set-target-btn" onClick={startEditingTarget}>
+                  {showTargetFeedback ? '✅ Target Updated!' : '📋 Set Target'}
+                </button>
+              ) : (
+                <div className="target-edit-form">
+                  <input
+                    type="number"
+                    value={targetPageInput}
+                    onChange={(e) => setTargetPageInput(e.target.value)}
+                    placeholder="Target pages"
+                    className="target-input"
+                    autoFocus
+                    onKeyPress={(e) => e.key === 'Enter' && saveTargetPages()}
+                  />
+                  <button onClick={saveTargetPages} className="save-target-btn">✓</button>
+                  <button onClick={cancelEditingTarget} className="cancel-target-btn">✕</button>
+                </div>
+              )}
             </div>
             <div className="save-status">
               {contentSaveStatus === 'saving' && <span className="saving">💾 Saving...</span>}

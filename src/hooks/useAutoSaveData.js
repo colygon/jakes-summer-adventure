@@ -89,7 +89,7 @@ export function useAutoSaveData(dataType, initialValue) {
         console.error(`Error saving ${dataType} data:`, error);
         setSaveStatus('error');
       }
-    }, 300),
+    }, dataType === 'book_content' ? 200 : 500),
     [dataType, getDbFunctions]
   );
 

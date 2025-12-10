@@ -8,6 +8,15 @@
   max-width: 100vw;
 }
 
+/* Save Status Indicator */
+.save-status-indicator {
+  margin-left: 1rem;
+  font-size: 0.8em;
+  color: var(--seaweed-green);
+  font-weight: normal;
+  opacity: 0.8;
+}
+
 .creative-section::before {
   content: '';
   position: absolute;
@@ -87,7 +96,7 @@
 }
 
 .book-content {
-  padding: 2rem;
+  padding: 2rem 2rem 2rem 2.5rem;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -306,8 +315,10 @@
 .book-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.5rem;
   margin-top: 0.5rem;
+  overflow: visible;
+  width: 100%;
 }
 
 .read-book-btn,
@@ -315,7 +326,7 @@
 .add-pages-btn,
 .edit-book-btn,
 .delete-book-btn {
-  padding: 0.3rem 0.6rem;
+  padding: 0.4rem 0.7rem;
   background: rgba(255, 255, 255, 0.2);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.4);
@@ -325,7 +336,9 @@
   transition: var(--transition-smooth);
   backdrop-filter: blur(10px);
   flex: 1;
-  min-width: 70px;
+  min-width: 75px;
+  text-align: center;
+  overflow: visible;
 }
 
 .read-book-btn:hover {

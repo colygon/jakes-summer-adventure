@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAutoSaveData } from '../hooks/useAutoSaveData';
 import BookReader from './BookReader';
 import BookWriter from './BookWriter';
@@ -243,16 +243,45 @@ const CreativeCorner = () => {
   const [selectedBookForReading, setSelectedBookForReading] = useState(null);
   const [selectedBookForWriting, setSelectedBookForWriting] = useState(null);
 
+  // Listen for custom event to open book reader from book writer
+  useEffect(() => {
+    const handleOpenBookReader = (event) => {
+      const { book } = event.detail;
+      setSelectedBookForWriting(null);
+      setSelectedBookForReading(book);
+    };
+
+    window.addEventListener('openBookReader', handleOpenBookReader);
+
+    return () => {
+      window.removeEventListener('openBookReader', handleOpenBookReader);
+    };
+  }, []);
+
   const handleUpdatePages = (bookId, pages, targetPages) => {
+    console.log('CreativeCorner: Updating book pages:', {
+      bookId,
+      pages,
+      targetPages
+    });
     setBookIdeas(prevBooks =>
-      prevBooks.map(book =>
-        book.id === bookId ? { ...book, pages, targetPages } : book
-      )
+      prevBooks.map(book => {
+        if (book.id === bookId) {
+          console.log('CreativeCorner: Found book to update:', book.title);
+          return { ...book, pages, targetPages };
+        }
+        return book;
+      })
     );
   };
 
   const handleAddBook = (newBook) => {
-    setBookIdeas(prevBooks => [...prevBooks, newBook]);
+    console.log('Adding new book to database:', newBook);
+    setBookIdeas(prevBooks => {
+      const updatedBooks = [...prevBooks, newBook];
+      console.log('Updated book list (will auto-save):', updatedBooks);
+      return updatedBooks;
+    });
   };
 
   const handleDeleteBook = (bookId) => {
@@ -281,6 +310,9 @@ const CreativeCorner = () => {
           transition={{ duration: 0.8 }}
         >
           Creative Corner 📖
+          {saveStatus === 'saving' && <span className="save-status-indicator">💾 Saving...</span>}
+          {saveStatus === 'saved' && <span className="save-status-indicator">✓</span>}
+          {saveStatus === 'error' && <span className="save-status-indicator">⚠ Error</span>}
         </motion.h2>
 
         <motion.p

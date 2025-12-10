@@ -18,9 +18,9 @@
   background: white;
   border-radius: 15px;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-  width: 98vw;
-  height: 95vh;
-  max-width: none;
+  width: 90vw;
+  height: 85vh;
+  max-width: 1400px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -240,8 +240,8 @@
   display: flex !important;
   flex-direction: row !important;
   overflow: hidden;
-  min-height: 80vh;
-  height: 80vh;
+  min-height: 60vh;
+  height: 60vh;
   width: 100%;
   justify-content: stretch;
   align-items: stretch;
@@ -326,6 +326,13 @@
   gap: 1rem;
 }
 
+/* Ensure both transcript sections have consistent width */
+.live-transcript-display,
+.dictated-content {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
 .live-transcript-display label,
 .live-transcript label,
 .dictated-content label {
@@ -359,17 +366,24 @@
   margin-bottom: 0.3rem;
 }
 
-.transcript-text {
+.transcript-text,
+.dictation-textarea {
+  width: 100%;
   min-height: 120px;
   padding: 1rem;
   background: white;
   border: 2px solid #e9ecef;
   border-radius: 10px;
   font-family: 'Georgia', serif;
+  font-size: 1rem;
   line-height: 1.6;
   color: #2c3e50;
-  overflow-y: auto;
+  box-sizing: border-box;
   transition: var(--transition-smooth);
+}
+
+.transcript-text {
+  overflow-y: auto;
 }
 
 .transcript-text.listening {
@@ -379,16 +393,6 @@
 }
 
 .dictation-textarea {
-  flex: 1;
-  min-height: 120px;
-  padding: 1rem;
-  border: 2px solid #e9ecef;
-  border-radius: 10px;
-  font-family: 'Georgia', serif;
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #2c3e50;
-  background: white;
   resize: none;
   outline: none;
 }
@@ -550,6 +554,22 @@
   transform: scale(1.05);
 }
 
+.turn-to-book-btn {
+  padding: 0.4rem 0.8rem;
+  background: linear-gradient(135deg, var(--ocean-blue), var(--seaweed-green));
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  font-size: 0.9rem;
+}
+
+.turn-to-book-btn:hover {
+  transform: scale(1.05);
+}
+
 .chapter-editor {
   flex: 1;
   padding: 2rem;
@@ -636,6 +656,72 @@
   font-weight: 600;
   color: var(--ocean-blue);
   font-family: var(--font-heading);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.set-target-btn {
+  padding: 0.3rem 0.6rem;
+  background: linear-gradient(135deg, var(--sunset-orange), var(--coral));
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.set-target-btn:hover {
+  transform: scale(1.05);
+}
+
+.target-edit-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.target-input {
+  width: 80px;
+  padding: 0.3rem 0.5rem;
+  border: 2px solid var(--ocean-blue);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+}
+
+.target-input:focus {
+  box-shadow: 0 0 0 2px rgba(0, 119, 190, 0.2);
+}
+
+.save-target-btn, .cancel-target-btn {
+  padding: 0.3rem 0.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  min-width: 24px;
+}
+
+.save-target-btn {
+  background: var(--seaweed-green);
+  color: white;
+}
+
+.cancel-target-btn {
+  background: #dc3545;
+  color: white;
+}
+
+.save-target-btn:hover, .cancel-target-btn:hover {
+  transform: scale(1.1);
 }
 
 .save-status {
