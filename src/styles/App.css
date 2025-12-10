@@ -1,0 +1,203 @@
+/* Global Variables and Base Styles */
+:root {
+  /* Beach & Nature Color Palette */
+  --ocean-blue: #0077be;
+  --light-blue: #87ceeb;
+  --sandy-beige: #f5e6d3;
+  --warm-sand: #e4d5b7;
+  --sunset-orange: #ff7f50;
+  --coral: #ff6b6b;
+  --seaweed-green: #20b2aa;
+  --palm-green: #228b22;
+  --wave-foam: #f0f8ff;
+  --deep-sea: #003366;
+
+  /* Typography */
+  --font-heading: 'Montserrat', sans-serif;
+  --font-body: 'Open Sans', sans-serif;
+
+  /* Spacing */
+  --section-padding: 4rem 2rem;
+  --container-max-width: 1200px;
+
+  /* Animations */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Open+Sans:wght@300;400;600&display=swap');
+
+/* Global Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-body);
+  line-height: 1.6;
+  color: var(--deep-sea);
+  background: linear-gradient(135deg, var(--wave-foam) 0%, var(--sandy-beige) 100%);
+  overflow-x: hidden;
+}
+
+/* Main App Container */
+.app {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Section Title Styles */
+.section-title {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, var(--ocean-blue), var(--seaweed-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sunset-orange), var(--coral));
+  border-radius: 2px;
+}
+
+/* Gradient Backgrounds */
+.bg-gradient-to-r {
+  background-image: linear-gradient(to right, var(--start-color), var(--end-color));
+}
+
+.from-blue-400 { --start-color: #60a5fa; }
+.to-teal-500 { --end-color: #14b8a6; }
+.from-amber-300 { --start-color: #fcd34d; }
+.to-orange-400 { --end-color: #fb923c; }
+.from-purple-400 { --start-color: #a78bfa; }
+.to-pink-500 { --end-color: #ec4899; }
+.from-green-400 { --start-color: #4ade80; }
+.to-blue-500 { --end-color: #3b82f6; }
+.from-orange-400 { --start-color: #fb923c; }
+.to-red-500 { --end-color: #ef4444; }
+.from-blue-500 { --start-color: #3b82f6; }
+.to-purple-600 { --end-color: #9333ea; }
+.from-green-500 { --start-color: #22c55e; }
+.to-teal-600 { --end-color: #0d9488; }
+.from-orange-500 { --start-color: #f97316; }
+.to-red-600 { --end-color: #dc2626; }
+.from-purple-500 { --start-color: #a855f7; }
+.to-pink-600 { --end-color: #db2777; }
+
+/* Utility Classes */
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Footer Styles */
+.app-footer {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--deep-sea));
+  color: white;
+  padding: 3rem 2rem;
+  text-align: center;
+  margin-top: 4rem;
+}
+
+.footer-content p {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.footer-icons {
+  font-size: 2rem;
+  letter-spacing: 1rem;
+  opacity: 0.8;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sandy-beige);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--ocean-blue), var(--seaweed-green));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(var(--seaweed-green), var(--ocean-blue));
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  :root {
+    --section-padding: 2rem 1rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+}
+
+/* Animation Classes */
+@keyframes wave {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(2deg); }
+  66% { transform: translateY(-5px) rotate(-2deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.wave-animation {
+  animation: wave 3s ease-in-out infinite;
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Loading Shimmer Effect */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
