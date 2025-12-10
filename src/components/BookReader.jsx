@@ -94,17 +94,10 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
       audio.play();
 
     } catch (error) {
-      console.error('Error generating audio:', error);
+      console.error('Error generating audio with ElevenLabs:', error);
       setIsGeneratingAudio(false);
-      // Fallback to browser speech synthesis
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.8;
-      utterance.pitch = 1;
-      utterance.volume = 1;
-      utterance.onstart = () => setIsPlaying(true);
-      utterance.onend = () => setIsPlaying(false);
-      utterance.onerror = () => setIsPlaying(false);
-      speechSynthesis.speak(utterance);
+      setIsPlaying(false);
+      alert('Audio generation failed. Please check your internet connection and try again.');
     }
   };
 
@@ -119,11 +112,6 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
   };
 
   const stopAudio = () => {
-    // Stop browser speech synthesis if running
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
-    }
-
     // Stop ElevenLabs audio if playing
     if (currentAudio) {
       currentAudio.pause();
@@ -158,9 +146,6 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
     if (currentAudio) {
       currentAudio.pause();
       setCurrentAudio(null);
-    }
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
     }
   }, [book?.id]);
 
