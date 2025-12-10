@@ -43,8 +43,111 @@ const writingTips = [
   "Read lots of books to inspire your own writing"
 ];
 
+const generateBookCover = (book) => {
+  // Create a data URL for the book cover based on title and genre
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = 300;
+  canvas.height = 400;
+
+  // Extract gradient colors from book.color
+  const gradientMap = {
+    'from-blue-500 to-purple-600': ['#3b82f6', '#9333ea'],
+    'from-green-500 to-teal-600': ['#22c55e', '#0d9488'],
+    'from-orange-500 to-red-600': ['#f97316', '#dc2626'],
+    'from-purple-500 to-pink-600': ['#a855f7', '#ec4899'],
+    'from-blue-400 to-teal-500': ['#60a5fa', '#14b8a6'],
+    'from-teal-500 to-green-600': ['#14b8a6', '#059669'],
+    'from-red-500 to-orange-600': ['#ef4444', '#ea580c'],
+    'from-indigo-500 to-purple-600': ['#6366f1', '#9333ea'],
+    'from-cyan-500 to-blue-600': ['#06b6d4', '#2563eb'],
+    'from-emerald-500 to-teal-600': ['#10b981', '#0d9488']
+  };
+
+  const [color1, color2] = gradientMap[book.color] || ['#3b82f6', '#9333ea'];
+
+  // Create gradient background
+  const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  gradient.addColorStop(0, color1);
+  gradient.addColorStop(1, color2);
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Add subtle texture overlay
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+  for (let i = 0; i < 50; i++) {
+    ctx.beginPath();
+    ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Add title text
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold 24px "Montserrat", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 2;
+  ctx.shadowBlur = 4;
+
+  // Wrap text for long titles
+  const words = book.title.split(' ');
+  const maxWidth = canvas.width - 40;
+  let line = '';
+  let y = 120;
+
+  for (let n = 0; n < words.length; n++) {
+    const testLine = line + words[n] + ' ';
+    const metrics = ctx.measureText(testLine);
+    const testWidth = metrics.width;
+    if (testWidth > maxWidth && n > 0) {
+      ctx.fillText(line, canvas.width / 2, y);
+      line = words[n] + ' ';
+      y += 30;
+    } else {
+      line = testLine;
+    }
+  }
+  ctx.fillText(line, canvas.width / 2, y);
+
+  // Add genre
+  ctx.font = '16px "Open Sans", sans-serif';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  ctx.fillText(book.genre, canvas.width / 2, y + 50);
+
+  // Add decorative element based on genre
+  const genreIcons = {
+    'Adventure': '🏔️',
+    'Educational Fiction': '🧮',
+    'Coming-of-Age': '🌅',
+    'Fantasy': '✨',
+    'Mystery': '🔍',
+    'Sci-Fi': '🚀',
+    'Romance': '💕',
+    'Horror': '👻'
+  };
+
+  const icon = genreIcons[book.genre] || '📚';
+  ctx.font = '40px Arial';
+  ctx.fillText(icon, canvas.width / 2, canvas.height - 60);
+
+  return canvas.toDataURL();
+};
+
 const BookCard = ({ book, index, onDelete, onRead, onWrite }) => {
   const progressPercentage = (book.pages / book.targetPages) * 100;
+  const [coverImage, setCoverImage] = useState(null);
+
+  useEffect(() => {
+    // Generate book cover when component mounts or book changes
+    try {
+      const imageUrl = generateBookCover(book);
+      setCoverImage(imageUrl);
+    } catch (error) {
+      console.warn('Failed to generate book cover:', error);
+      setCoverImage(null);
+    }
+  }, [book.title, book.genre, book.color]);
 
   return (
     <motion.div
@@ -55,12 +158,16 @@ const BookCard = ({ book, index, onDelete, onRead, onWrite }) => {
       viewport={{ once: true }}
       whileHover={{ scale: 1.05, rotateY: 5 }}
     >
-      <div className={`book-cover bg-gradient-to-r ${book.color}`}>
+      <div className={`book-cover ${!coverImage ? `bg-gradient-to-r ${book.color}` : ''}`} style={coverImage ? { backgroundImage: `url(${coverImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
         <div className="book-spine"></div>
         <div className="book-content">
-          <h3>{book.title}</h3>
-          <span className="genre-tag">{book.genre}</span>
-          <p>{book.description}</p>
+          {!coverImage && (
+            <>
+              <h3>{book.title}</h3>
+              <span className="genre-tag">{book.genre}</span>
+              <p>{book.description}</p>
+            </>
+          )}
 
           <div className="writing-progress">
             <div className="progress-text">
