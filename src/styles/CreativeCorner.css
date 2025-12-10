@@ -215,7 +215,7 @@
   padding: 2rem;
   margin-bottom: 3rem;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-  border: 3px solid var(--sunset-orange);
+  border: none;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -326,28 +326,35 @@
   padding: 0.5rem;
 }
 
-.notes-save-status {
-  position: absolute;
-  bottom: 0.5rem;
-  right: 0.5rem;
-  z-index: 3;
+/* External save status - below notebook */
+.notes-save-status-external {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
 }
 
-.notes-save-status .saving {
+.notes-save-status-external .saving {
   color: #f59e0b;
-  font-size: 0.9rem;
   animation: pulse 1.5s ease-in-out infinite;
 }
 
-.notes-save-status .saved {
+.notes-save-status-external .saved {
   color: #22c55e;
-  font-size: 1.2rem;
+  font-weight: 600;
   animation: fade-in 0.3s ease;
 }
 
-.notes-save-status .error {
+.notes-save-status-external .error {
   color: #ef4444;
-  font-size: 1rem;
+}
+
+.notes-save-status-external .char-count {
+  color: var(--text-muted);
+  font-size: 0.85rem;
 }
 
 @keyframes fade-in {
@@ -377,13 +384,18 @@
   overflow: hidden;
 }
 
-.workspace-btn:hover {
+.workspace-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 .workspace-btn:active {
   transform: translateY(0);
+}
+
+.workspace-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .start-book-btn {
@@ -394,6 +406,12 @@
 .save-notes-btn {
   background: linear-gradient(135deg, var(--sunset-orange), var(--coral));
   color: white;
+}
+
+.workspace-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 .workspace-btn::before {
@@ -653,6 +671,21 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
 /* Add Book Form */
 .add-book-form {
   background: white;
@@ -739,7 +772,7 @@
   font-family: var(--font-heading);
   color: var(--seaweed-green);
   margin-bottom: 1rem;
-  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  font-size: clamp(2rem, 3vw, 2.5rem);
 }
 
 .tip-card-mini {
@@ -756,13 +789,13 @@
 .tip-card-mini p {
   margin-bottom: 1rem;
   line-height: 1.6;
-  font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+  font-size: clamp(1.8rem, 2.5vw, 2.2rem);
 }
 
 .next-tip-btn {
   background: rgba(255, 255, 255, 0.2);
   color: white;
-  font-size: clamp(0.8rem, 1.2vw, 1rem);
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
   border: 2px solid white;
   padding: 0.5rem 1rem;
   border-radius: 20px;

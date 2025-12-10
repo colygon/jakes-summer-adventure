@@ -46,9 +46,13 @@ const writingTips = [
 const generateBookCover = (book) => {
   // Create a data URL for the book cover based on title and genre
   const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = 300;
-  canvas.height = 400;
+  const ctx = canvas.getContext('2d', { alpha: false });
+  canvas.width = 600;  // Double resolution for better quality
+  canvas.height = 800;
+
+  // Enable better text rendering
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
 
   // Extract gradient colors from book.color
   const gradientMap = {
@@ -81,20 +85,21 @@ const generateBookCover = (book) => {
     ctx.fill();
   }
 
-  // Add title text
+  // Add title text with better rendering
   ctx.fillStyle = 'white';
-  ctx.font = 'bold 24px "Montserrat", sans-serif';
+  ctx.font = 'bold 48px "Montserrat", sans-serif';  // Double font size
   ctx.textAlign = 'center';
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-  ctx.shadowOffsetX = 2;
-  ctx.shadowOffsetY = 2;
-  ctx.shadowBlur = 4;
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+  ctx.shadowOffsetX = 4;
+  ctx.shadowOffsetY = 4;
+  ctx.shadowBlur = 8;
 
   // Wrap text for long titles
   const words = book.title.split(' ');
-  const maxWidth = canvas.width - 40;
+  const maxWidth = canvas.width - 80;
   let line = '';
-  let y = 120;
+  let y = 240;  // Double the y position
 
   for (let n = 0; n < words.length; n++) {
     const testLine = line + words[n] + ' ';
@@ -103,7 +108,7 @@ const generateBookCover = (book) => {
     if (testWidth > maxWidth && n > 0) {
       ctx.fillText(line, canvas.width / 2, y);
       line = words[n] + ' ';
-      y += 30;
+      y += 60;  // Double line spacing
     } else {
       line = testLine;
     }
@@ -111,9 +116,9 @@ const generateBookCover = (book) => {
   ctx.fillText(line, canvas.width / 2, y);
 
   // Add genre
-  ctx.font = '16px "Open Sans", sans-serif';
+  ctx.font = '32px "Open Sans", sans-serif';  // Double font size
   ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-  ctx.fillText(book.genre, canvas.width / 2, y + 50);
+  ctx.fillText(book.genre, canvas.width / 2, y + 100);
 
   // Add decorative element based on genre with background circle for visibility
   const genreIcons = {
@@ -128,22 +133,31 @@ const generateBookCover = (book) => {
 
   const icon = genreIcons[book.genre] || '📚';
 
-  // Draw background circle for emoji visibility
+  // Draw better background circle for emoji visibility
   const iconX = canvas.width / 2;
-  const iconY = canvas.height - 60;
+  const iconY = canvas.height - 120;
   ctx.beginPath();
-  ctx.arc(iconX, iconY - 10, 30, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  ctx.arc(iconX, iconY - 20, 60, 0, Math.PI * 2);  // Bigger circle
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';  // More opaque
   ctx.fill();
-  ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
-  ctx.lineWidth = 1;
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+  ctx.lineWidth = 2;
   ctx.stroke();
 
-  // Draw emoji on top of background
-  ctx.font = '40px Arial';
+  // Draw emoji on top of background with better sizing
+  ctx.font = '80px system-ui, -apple-system, "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji"';  // Better emoji font
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
   ctx.fillText(icon, iconX, iconY);
 
-  return canvas.toDataURL();
+  // Scale down for display while keeping quality
+  const displayCanvas = document.createElement('canvas');
+  const displayCtx = displayCanvas.getContext('2d');
+  displayCanvas.width = 300;
+  displayCanvas.height = 400;
+  displayCtx.drawImage(canvas, 0, 0, 300, 400);
+
+  return displayCanvas.toDataURL();
 };
 
 const BookCard = ({ book, index, onDelete, onRead, onWrite }) => {
@@ -296,6 +310,7 @@ const WritingWorkspace = ({ onStartNewBook }) => {
   const [notes, setNotes, { saveStatus, isLoading, lastSaved }] = useAutoSaveData('notes', '');
   const [savedNotes, setSavedNotes] = useState([]);
   const [selectedNoteId, setSelectedNoteId] = useState(null);
+  const [showAddBookForm, setShowAddBookForm] = useState(false);
 
   const nextTip = () => {
     setCurrentTip((prev) => (prev + 1) % writingTips.length);
@@ -306,25 +321,20 @@ const WritingWorkspace = ({ onStartNewBook }) => {
       alert('Please write some content before starting a new book!');
       return;
     }
+    setShowAddBookForm(true);
+  };
 
-    // Generate a unique title
-    const bookTitle = prompt('Enter a title for your new book:', 'My New Story');
-    if (!bookTitle) return;
-
-    const bookGenre = prompt('Enter a genre (Adventure, Fantasy, Mystery, etc.):', 'Adventure');
-    if (!bookGenre) return;
-
+  const handleAddBookFromForm = (bookData) => {
     // Create new book with content from workspace
     onStartNewBook({
-      title: bookTitle,
-      genre: bookGenre,
+      ...bookData,
       content: notes,
-      description: notes.substring(0, 100) + '...'
+      description: bookData.description || notes.substring(0, 100) + '...'
     });
 
-    // Clear the workspace
+    // Clear the workspace and close form
     setNotes('');
-    alert('Book created successfully! Check your book shelf above.');
+    setShowAddBookForm(false);
   };
 
   const handleSaveToNotes = () => {
@@ -417,27 +427,27 @@ const WritingWorkspace = ({ onStartNewBook }) => {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
-            <div className="notes-save-status">
-              {isLoading && <span className="loading">🔄 Loading...</span>}
-              {saveStatus === 'saving' && <span className="saving">💾 Saving...</span>}
-              {saveStatus === 'saved' && <span className="saved">✓ Saved{lastSaved ? ` at ${lastSaved}` : ''}</span>}
-              {saveStatus === 'error' && <span className="error">⚠ Save Error</span>}
-              {!isLoading && notes.length > 0 && <span className="char-count">{notes.length} characters</span>}
-            </div>
           </div>
+        </div>
+        <div className="notes-save-status-external">
+          {isLoading && <span className="loading">🔄 Loading...</span>}
+          {saveStatus === 'saving' && <span className="saving">💾 Saving...</span>}
+          {saveStatus === 'saved' && <span className="saved">✓ Saved{lastSaved ? ` at ${lastSaved}` : ''}</span>}
+          {saveStatus === 'error' && <span className="error">⚠ Save Error</span>}
+          {!isLoading && notes.length > 0 && <span className="char-count">{notes.length} characters</span>}
         </div>
 
         {/* Action Buttons */}
         <div className="workspace-actions">
           <button
-            className="action-btn start-book-btn"
+            className="workspace-btn start-book-btn"
             onClick={handleStartNewBook}
             disabled={!notes.trim()}
           >
             📚 Start a New Book
           </button>
           <button
-            className="action-btn save-note-btn"
+            className="workspace-btn save-notes-btn"
             onClick={handleSaveToNotes}
             disabled={!notes.trim()}
           >
@@ -482,6 +492,18 @@ const WritingWorkspace = ({ onStartNewBook }) => {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Add Book Form Modal */}
+      {showAddBookForm && (
+        <div className="modal-overlay" onClick={() => setShowAddBookForm(false)}>
+          <div onClick={(e) => e.stopPropagation()}>
+            <AddBookForm
+              onAdd={handleAddBookFromForm}
+              onClose={() => setShowAddBookForm(false)}
+            />
           </div>
         </div>
       )}
