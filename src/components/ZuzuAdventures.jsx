@@ -15,7 +15,7 @@ const dogFriendlyTips = [
     title: "Beach Safety",
     tip: "Fresh water, shade, and paw protection for hot sand",
     icon: "🏖️",
-    details: "Bring plenty of fresh water, portable shade, and consider paw balm for hot sand at Cape Cod beaches."
+    details: "Bring plenty of fresh water, portable shade, and consider paw balm for hot sand at Falmouth beaches on Cape Cod."
   },
   {
     id: 3,
@@ -38,7 +38,7 @@ const zuzuGallery = [
     id: 1,
     alt: "Zuzu at the beach",
     emoji: "🐕🏖️",
-    caption: "Ready for Cape Cod adventures!"
+    caption: "Ready for Falmouth adventures!"
   },
   {
     id: 2,

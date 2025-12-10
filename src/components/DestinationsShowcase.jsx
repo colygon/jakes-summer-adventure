@@ -19,7 +19,7 @@ const destinations = [
   },
   {
     id: 2,
-    name: "Cape Cod",
+    name: "Falmouth, Cape Cod",
     image: "🏖️",
     emoji: "🦞",
     description: "Three weeks of coastal bliss and beach adventures",

@@ -112,7 +112,7 @@ const WritingWorkspace = () => {
           transition={{ delay: 0.5, duration: 1 }}
         >
           "The summer breeze carried the scent of salt water as Jake and Zuzu
-          stepped onto the sandy shore of Cape Cod..."
+          stepped onto the sandy shore of Falmouth..."
         </motion.p>
       </div>
 

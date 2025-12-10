@@ -23,8 +23,8 @@ const locations = [
   },
   {
     id: 2,
-    name: "Cape Cod",
-    coordinates: [41.6688, -70.2962],
+    name: "Falmouth, Cape Cod",
+    coordinates: [41.5481, -70.6148],
     description: "Beach relaxation and 3-week coastal adventure",
     icon: "🏖️",
     details: "Beautiful beaches, lighthouses, and family time by the ocean"
