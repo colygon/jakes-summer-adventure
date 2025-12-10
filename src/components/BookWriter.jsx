@@ -300,6 +300,34 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
                     </div>
                   </div>
 
+                  {/* Voice Control Buttons */}
+                  <div className="voice-controls-inline">
+                    {isSupported && (
+                      <>
+                        <button
+                          className={`dictate-btn ${isListening ? 'listening' : ''}`}
+                          onClick={isListening ? stopDictation : startDictation}
+                        >
+                          {isListening ? '⏹️ Stop' : '🎤 Dictate'}
+                        </button>
+                        <button
+                          className="clear-btn"
+                          onClick={clearDictation}
+                          disabled={!dictationText}
+                        >
+                          🗑️ Clear
+                        </button>
+                        <button
+                          className="insert-btn"
+                          onClick={insertDictationToChapter}
+                          disabled={!dictationText.trim()}
+                        >
+                          {showAddedFeedback ? '✅ Added!' : '➡️ Add to Chapter'}
+                        </button>
+                      </>
+                    )}
+                  </div>
+
                   <div className="live-transcript-display">
                     <label>Speech Recognition:</label>
                     <div className={`transcript-text ${isListening ? 'listening' : ''}`}>
@@ -381,33 +409,6 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
             </div>
           </div>
 
-          {/* Voice Control Buttons - Always Visible */}
-          <div className="voice-controls-bar">
-            {isSupported && (
-              <>
-                <button
-                  className={`dictate-btn ${isListening ? 'listening' : ''}`}
-                  onClick={isListening ? stopDictation : startDictation}
-                >
-                  {isListening ? '⏹️ Stop' : '🎤 Dictate'}
-                </button>
-                <button
-                  className="clear-btn"
-                  onClick={clearDictation}
-                  disabled={!dictationText}
-                >
-                  🗑️ Clear
-                </button>
-                <button
-                  className="insert-btn"
-                  onClick={insertDictationToChapter}
-                  disabled={!dictationText.trim()}
-                >
-                  {showAddedFeedback ? '✅ Added!' : '➡️ Add to Chapter'}
-                </button>
-              </>
-            )}
-          </div>
 
           <div className="writer-footer">
             <div className="progress-info">
