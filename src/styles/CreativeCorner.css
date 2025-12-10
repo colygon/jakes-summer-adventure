@@ -328,7 +328,7 @@
 
 .notes-save-status {
   position: absolute;
-  top: 0.5rem;
+  bottom: 0.5rem;
   right: 0.5rem;
   z-index: 3;
 }
@@ -353,6 +353,157 @@
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+/* Workspace Action Buttons */
+.workspace-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.workspace-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.workspace-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.workspace-btn:active {
+  transform: translateY(0);
+}
+
+.start-book-btn {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--seaweed-green));
+  color: white;
+}
+
+.save-notes-btn {
+  background: linear-gradient(135deg, var(--sunset-orange), var(--coral));
+  color: white;
+}
+
+.workspace-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.workspace-btn:hover::before {
+  left: 100%;
+}
+
+/* Notes Cards Section */
+.notes-section {
+  margin-top: 2rem;
+}
+
+.notes-section h4 {
+  font-family: var(--font-heading);
+  color: var(--ocean-blue);
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.note-card {
+  background: linear-gradient(135deg, #fff, #f8f9fa);
+  border: 2px solid var(--light-blue);
+  border-radius: 12px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.note-card:hover {
+  border-color: var(--sunset-orange);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.note-card.selected {
+  border-color: var(--coral);
+  background: linear-gradient(135deg, #fff5f5, #fef2f2);
+}
+
+.note-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.note-title {
+  font-weight: 600;
+  color: var(--deep-sea);
+  font-size: 1rem;
+}
+
+.note-timestamp {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.note-preview {
+  color: var(--text-dark);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.note-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.delete-note-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  opacity: 0.7;
+}
+
+.delete-note-btn:hover {
+  opacity: 1;
+  background: #dc2626;
 }
 
 /* Book Actions */

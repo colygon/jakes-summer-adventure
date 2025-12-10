@@ -291,12 +291,75 @@ const AddBookForm = ({ onAdd, onClose }) => {
   );
 };
 
-const WritingWorkspace = () => {
+const WritingWorkspace = ({ onStartNewBook }) => {
   const [currentTip, setCurrentTip] = useState(0);
   const [notes, setNotes, { saveStatus, isLoading, lastSaved }] = useAutoSaveData('notes', '');
+  const [savedNotes, setSavedNotes] = useState([]);
+  const [selectedNoteId, setSelectedNoteId] = useState(null);
 
   const nextTip = () => {
     setCurrentTip((prev) => (prev + 1) % writingTips.length);
+  };
+
+  const handleStartNewBook = () => {
+    if (!notes.trim()) {
+      alert('Please write some content before starting a new book!');
+      return;
+    }
+
+    // Generate a unique title
+    const bookTitle = prompt('Enter a title for your new book:', 'My New Story');
+    if (!bookTitle) return;
+
+    const bookGenre = prompt('Enter a genre (Adventure, Fantasy, Mystery, etc.):', 'Adventure');
+    if (!bookGenre) return;
+
+    // Create new book with content from workspace
+    onStartNewBook({
+      title: bookTitle,
+      genre: bookGenre,
+      content: notes,
+      description: notes.substring(0, 100) + '...'
+    });
+
+    // Clear the workspace
+    setNotes('');
+    alert('Book created successfully! Check your book shelf above.');
+  };
+
+  const handleSaveToNotes = () => {
+    if (!notes.trim()) {
+      alert('Please write some content before saving to notes!');
+      return;
+    }
+
+    const noteTitle = prompt('Give this note a title:', `Note ${savedNotes.length + 1}`);
+    if (!noteTitle) return;
+
+    const newNote = {
+      id: Date.now(),
+      title: noteTitle,
+      content: notes,
+      timestamp: new Date().toLocaleString()
+    };
+
+    setSavedNotes(prev => [...prev, newNote]);
+    setNotes('');
+    alert('Note saved successfully!');
+  };
+
+  const loadNoteToWorkspace = (note) => {
+    setNotes(note.content);
+    setSelectedNoteId(note.id);
+  };
+
+  const deleteNote = (noteId) => {
+    if (window.confirm('Are you sure you want to delete this note?')) {
+      setSavedNotes(prev => prev.filter(note => note.id !== noteId));
+      if (selectedNoteId === noteId) {
+        setSelectedNoteId(null);
+      }
+    }
   };
 
   // Debug logging for persistence
@@ -363,7 +426,65 @@ const WritingWorkspace = () => {
             </div>
           </div>
         </div>
+
+        {/* Action Buttons */}
+        <div className="workspace-actions">
+          <button
+            className="action-btn start-book-btn"
+            onClick={handleStartNewBook}
+            disabled={!notes.trim()}
+          >
+            📚 Start a New Book
+          </button>
+          <button
+            className="action-btn save-note-btn"
+            onClick={handleSaveToNotes}
+            disabled={!notes.trim()}
+          >
+            📝 Save to Notes
+          </button>
+        </div>
       </div>
+
+      {/* Saved Notes Section */}
+      {savedNotes.length > 0 && (
+        <div className="saved-notes-section">
+          <h4>📋 Saved Notes</h4>
+          <div className="notes-grid">
+            {savedNotes.map(note => (
+              <motion.div
+                key={note.id}
+                className={`note-card ${selectedNoteId === note.id ? 'selected' : ''}`}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="note-header">
+                  <h5>{note.title}</h5>
+                  <span className="note-timestamp">{note.timestamp}</span>
+                </div>
+                <p className="note-preview">
+                  {note.content.substring(0, 100)}...
+                </p>
+                <div className="note-actions">
+                  <button
+                    className="load-note-btn"
+                    onClick={() => loadNoteToWorkspace(note)}
+                  >
+                    📖 Load
+                  </button>
+                  <button
+                    className="delete-note-btn"
+                    onClick={() => deleteNote(note.id)}
+                  >
+                    🗑️ Delete
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };
@@ -408,8 +529,31 @@ const CreativeCorner = () => {
 
   const handleAddBook = (newBook) => {
     console.log('Adding new book to database:', newBook);
+
+    // Generate random color for the book
+    const colors = [
+      "from-blue-500 to-purple-600",
+      "from-green-500 to-teal-600",
+      "from-orange-500 to-red-600",
+      "from-purple-500 to-pink-600",
+      "from-blue-400 to-teal-500",
+      "from-teal-500 to-green-600",
+      "from-red-500 to-orange-600",
+      "from-indigo-500 to-purple-600",
+      "from-cyan-500 to-blue-600",
+      "from-emerald-500 to-teal-600"
+    ];
+
+    const bookWithDefaults = {
+      id: Date.now(),
+      pages: Math.ceil((newBook.content?.length || 0) / 250), // Estimate pages from content
+      targetPages: 100,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      ...newBook
+    };
+
     setBookIdeas(prevBooks => {
-      const updatedBooks = [...prevBooks, newBook];
+      const updatedBooks = [...prevBooks, bookWithDefaults];
       console.log('Updated book list (will auto-save):', updatedBooks);
       return updatedBooks;
     });
@@ -499,7 +643,7 @@ const CreativeCorner = () => {
           </div>
         </div>
 
-        <WritingWorkspace />
+        <WritingWorkspace onStartNewBook={handleAddBook} />
 
         <motion.div
           className="inspiration-quote"
