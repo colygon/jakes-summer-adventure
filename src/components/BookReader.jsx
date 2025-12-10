@@ -53,12 +53,12 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
     try {
       console.log('Generating audio with ElevenLabs API for text:', text);
 
-      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/9IzcwKmvwJcw58h3KnlH', {
+      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/e154e3ad275a1847adfe661b27eded8f60b927846d43eaf02ddafe71b5670a8d', {
         method: 'POST',
         headers: {
           'Accept': 'audio/mpeg',
           'Content-Type': 'application/json',
-          'xi-api-key': '018ce920c3ae7582901277a415e7b252c392ae0d4bc0c4dbc13eb7b0e93839e7'
+          'xi-api-key': 'sk_d8f2501b76b5baab289a04ac720e2a10cea9018e247e6a2d'
         },
         body: JSON.stringify({
           text: text,
