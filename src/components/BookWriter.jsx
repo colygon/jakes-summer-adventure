@@ -416,7 +416,6 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
                       <li>Speak clearly and at normal pace</li>
                       <li>Use punctuation commands: "period", "comma", "question mark"</li>
                       <li>Say "new paragraph" for line breaks</li>
-                      <li>Edit your text before adding to chapter</li>
                     </ul>
                   </div>
 
@@ -438,7 +437,7 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
                   </div>
 
                   <div className="dictated-content">
-                    <label>Dictated Text (Edit before adding):</label>
+                    <label>Dictated Text:</label>
                     <div className="textarea-container">
                       <textarea
                         ref={dictationRef}
