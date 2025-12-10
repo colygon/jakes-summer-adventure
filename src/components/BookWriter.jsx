@@ -413,7 +413,6 @@ const BookWriter = ({ book, isOpen, onClose, onUpdateBook }) => {
                   <div className="dictation-tips">
                     <h5>Voice Tips:</h5>
                     <ul>
-                      <li>Speak clearly and at normal pace</li>
                       <li>Use punctuation commands: "period", "comma", "question mark"</li>
                       <li>Say "new paragraph" for line breaks</li>
                     </ul>
