@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { useAutoSaveData } from '../hooks/useAutoSaveData';
 import audioCache from '../utils/audioCache';
 import '../styles/BookReader.css';
 
@@ -8,6 +9,7 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [currentAudio, setCurrentAudio] = useState(null);
+  const [bookContent, setBookContent] = useAutoSaveData('book_content', {});
 
   // Sample book content - in real app this would come from the book data
   const sampleContent = {
@@ -31,22 +33,48 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
     ]
   };
 
-  const bookContent = sampleContent[book?.id] || [
-    `This is the beginning of "${book?.title}" by Jake.`,
-    "Every great story starts with a single word, a single idea.",
-    "As you read these pages, imagine the adventures that await.",
-    "The story continues to grow with each passing day..."
-  ];
+  // Get actual book content from database or use fallback
+  const getBookContent = () => {
+    if (book && bookContent[book.id] && bookContent[book.id].chapters) {
+      // Convert chapters to readable content
+      const chapters = bookContent[book.id].chapters;
+      const contentArray = [];
 
-  const totalPages = Math.ceil(bookContent.length / 2);
+      chapters.forEach(chapter => {
+        if (chapter.content && chapter.content.trim()) {
+          // Split chapter content into readable chunks (paragraphs)
+          const paragraphs = chapter.content.split('\n').filter(p => p.trim());
+          contentArray.push(...paragraphs);
+        }
+      });
+
+      return contentArray.length > 0 ? contentArray : [
+        `"${book.title}" is ready for your words.`,
+        "Start writing to see your story come to life here!",
+        "Each chapter you write will appear as pages to read.",
+        "Your creativity is the only limit to this adventure."
+      ];
+    }
+
+    return sampleContent[book?.id] || [
+      `This is the beginning of "${book?.title}" by Jake.`,
+      "Every great story starts with a single word, a single idea.",
+      "As you read these pages, imagine the adventures that await.",
+      "The story continues to grow with each passing day..."
+    ];
+  };
+
+  const bookContentPages = getBookContent();
+
+  const totalPages = Math.ceil(bookContentPages.length / 2);
 
   const getPageContent = (pageIndex) => {
     const leftPageIndex = pageIndex * 2;
     const rightPageIndex = pageIndex * 2 + 1;
 
     return {
-      left: bookContent[leftPageIndex] || "",
-      right: bookContent[rightPageIndex] || ""
+      left: bookContentPages[leftPageIndex] || "",
+      right: bookContentPages[rightPageIndex] || ""
     };
   };
 
@@ -212,7 +240,7 @@ const BookReader = ({ book, isOpen, onClose, onEdit }) => {
       currentAudio.pause();
       setCurrentAudio(null);
     }
-  }, [book?.id, currentAudio]);
+  }, [book?.id, bookContent, currentAudio]);
 
   if (!isOpen || !book) return null;
 

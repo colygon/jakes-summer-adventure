@@ -43,20 +43,8 @@ const writingTips = [
   "Read lots of books to inspire your own writing"
 ];
 
-const BookCard = ({ book, index, onUpdatePages, onDelete, onRead, onWrite }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedBook, setEditedBook] = useState(book);
+const BookCard = ({ book, index, onDelete, onRead, onWrite }) => {
   const progressPercentage = (book.pages / book.targetPages) * 100;
-
-  const handleSave = () => {
-    onUpdatePages(book.id, editedBook.pages, editedBook.targetPages);
-    setIsEditing(false);
-  };
-
-  const handleAddPages = () => {
-    const newPages = Math.min(book.targetPages, book.pages + 5);
-    onUpdatePages(book.id, newPages, book.targetPages);
-  };
 
   return (
     <motion.div
@@ -75,65 +63,29 @@ const BookCard = ({ book, index, onUpdatePages, onDelete, onRead, onWrite }) => 
           <p>{book.description}</p>
 
           <div className="writing-progress">
-            {!isEditing ? (
-              <>
-                <div className="progress-text">
-                  {book.pages} / {book.targetPages} pages
-                  {progressPercentage === 100 && <span className="book-complete">📖 Complete!</span>}
-                </div>
-                <div className="progress-bar">
-                  <motion.div
-                    className="progress-fill"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progressPercentage}%` }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                  ></motion.div>
-                </div>
-                <div className="book-actions">
-                  <button className="read-book-btn" onClick={() => onRead(book)}>
-                    📖 Read
-                  </button>
-                  <button className="write-book-btn" onClick={() => onWrite(book)}>
-                    ✍️ Write
-                  </button>
-                  <button className="add-pages-btn" onClick={handleAddPages}>
-                    +5 pages
-                  </button>
-                  <button className="edit-book-btn" onClick={() => setIsEditing(true)}>
-                    Edit
-                  </button>
-                  <button className="delete-book-btn" onClick={() => onDelete(book.id)}>
-                    🗑️
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="book-editor">
-                <label>
-                  Pages Written:
-                  <input
-                    type="number"
-                    value={editedBook.pages}
-                    onChange={(e) => setEditedBook({ ...editedBook, pages: parseInt(e.target.value) || 0 })}
-                    min="0"
-                    max={editedBook.targetPages}
-                  />
-                </label>
-                <label>
-                  Target Pages:
-                  <input
-                    type="number"
-                    value={editedBook.targetPages}
-                    onChange={(e) => setEditedBook({ ...editedBook, targetPages: parseInt(e.target.value) || 1 })}
-                    min="1"
-                  />
-                </label>
-                <div className="editor-buttons">
-                  <button onClick={handleSave}>Save</button>
-                  <button onClick={() => setIsEditing(false)}>Cancel</button>
-                </div>
-              </div>
-            )}
+            <div className="progress-text">
+              {book.pages} pages written (target: {book.targetPages})
+              {progressPercentage === 100 && <span className="book-complete">📖 Complete!</span>}
+            </div>
+            <div className="progress-bar">
+              <motion.div
+                className="progress-fill"
+                initial={{ width: 0 }}
+                animate={{ width: `${progressPercentage}%` }}
+                transition={{ duration: 1, delay: 0.5 }}
+              ></motion.div>
+            </div>
+            <div className="book-actions">
+              <button className="read-book-btn" onClick={() => onRead(book)}>
+                📖 Read
+              </button>
+              <button className="write-book-btn" onClick={() => onWrite(book)}>
+                ✍️ Write
+              </button>
+              <button className="delete-book-btn" onClick={() => onDelete(book.id)}>
+                🗑️
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -376,7 +328,6 @@ const CreativeCorner = () => {
                 key={book.id}
                 book={book}
                 index={index}
-                onUpdatePages={handleUpdatePages}
                 onDelete={handleDeleteBook}
                 onRead={(book) => setSelectedBookForReading(book)}
                 onWrite={(book) => setSelectedBookForWriting(book)}

@@ -18,10 +18,8 @@
   background: linear-gradient(135deg, #f8f9fa, #e9ecef);
   border-radius: 20px;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-  max-width: 90vw;
-  max-height: 90vh;
-  width: 800px;
-  height: 600px;
+  width: 98vw;
+  height: 95vh;
   display: flex;
   flex-direction: column;
   position: relative;
